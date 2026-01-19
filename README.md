@@ -25,17 +25,23 @@ The system is designed to process "factoid" questions (e.g., "Where is the Louvr
 
 ## 📊 Dataset
 
-We use the **Stanford Question Answering Dataset (SQuAD) 2.0**.
+### Data Origin: SQuAD 2.0
+The data for this project comes from the **Stanford Question Answering Dataset (SQuAD) 2.0**.
 
-* **Structure**: The dataset is composed of titles, contexts (paragraphs), questions, and accepted answers.
+**SQuAD** (Stanford Question Answering Dataset) is a reading comprehension dataset, consisting of questions posed by crowdworkers on a set of Wikipedia articles, where the answer to every question is a segment of text, or *span*, from the corresponding reading passage, or the question might be unanswerable.
 
+SQuAD 2.0 combines the 100,000 questions in SQuAD 1.1 with over 50,000 unanswerable questions written adversarially by crowdworkers to look similar to answerable ones. To do well on SQuAD 2.0, systems must not only answer questions when possible, but also determine when no answer is supported by the paragraph and abstain from answering.
 
-* **Format**: Data is provided in JSON format.
+**Key Facts:**
+*   **Source**: [Stanford NLP Group](https://rajpurkar.github.io/SQuAD-explorer/)
+*   **Content Base**: 500+ articles from Wikipedia.
+*   **Size**: ~150k questions total.
 
-
-* **Specificity**: Each answer has an `answer_start` indicator specifying its exact position in the text. Questions without a solution (is_impossible == true) have been discarded for this project.
-
-
+### Project Specifics
+*   **Structure**: The dataset is composed of titles, contexts (paragraphs), questions, and accepted answers.
+*   **Format**: Data is provided in JSON format.
+*   **Specificity**: Each answer has an `answer_start` indicator specifying its exact position in the text.
+*   **Note**: While SQuAD 2.0 includes unanswerable questions, for the scope of *some* phases of this project, we may filter for `is_impossible == false` depending on the specific model architecture requirements (as noted in project constraints).
 
 ---
 
