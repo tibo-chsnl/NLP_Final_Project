@@ -1,20 +1,18 @@
 # Work Division: NLP Final Project (Question Answering System)
 
-Based on the project requirements outlined in the README and the team size of 3 developers, here is a proposed division of work to ensure efficient parallel development and clear ownership.
-
 ## 👥 Team Roles Overview
 
 | Role | Focus Area | Primary Responsibilities |
 | :--- | :--- | :--- |
-| **Developer 1** | **Data & Evaluation** | Dataset loading, Preprocessing, Tokenization, Evaluation Metrics. |
-| **Developer 2** | **Model Architecture** | Neural Network Design, Layer Implementation, Forward Pass Logic. |
-| **Developer 3** | **Training & Ops** | Training Loop, Optimization, Checkpointing, Colab/GPU Setup, Experiments. |
+| **Thibault CHESNEL** | **Data & Evaluation** | Dataset loading, Preprocessing, Tokenization, Evaluation Metrics. |
+| **Axel STOLTZ** | **Model Architecture** | Neural Network Design, Layer Implementation, Forward Pass Logic. |
+| **Alon DEBASC** | **Training & Ops** | Training Loop, Optimization, Checkpointing, Colab/GPU Setup, Experiments, GUI Setup. |
 
 ---
 
 ## 🛠️ Detailed Responsibilities
 
-### 🧑‍💻 Developer 1: Data Engineer (The Foundation)
+### 🧑💻 Thibault CHESNEL: Data Engineer (The Foundation)
 **Goal:** Ensure the model is fed clean, correctly shaped data and can be evaluated accurately.
 
 *   **Dataset Handling**:
@@ -31,7 +29,7 @@ Based on the project requirements outlined in the README and the team size of 3 
     *   Implement **F1 Score**.
     *   Create a robust validation function to compare specific predictions vs. ground truth.
 
-### 🧑‍💻 Developer 2: Model Architect (The Brain)
+### 🧑💻 Axel STOLTZ: Model Architect (The Brain)
 **Goal:** Build the Deep Neural Network that processes the inputs and predicts the answer span.
 
 *   **Model Design**:
@@ -46,7 +44,7 @@ Based on the project requirements outlined in the README and the team size of 3 
 *   **Documentation**:
     *   Document every layer and algorithm choice as required by the project description.
 
-### 🧑‍💻 Developer 3: MLOps & Training Engineer (The Engine)
+### 🧑💻 Alon DEBASC: MLOps & Training Engineer (The Engine)
 **Goal:** Create the environment where the model learns, optimizes, and improves.
 
 *   **Training Loop**:
