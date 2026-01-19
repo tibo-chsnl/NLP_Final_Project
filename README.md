@@ -8,20 +8,16 @@ Le système est conçu pour traiter des questions de type "factoïdes" (ex: "Où
 
 ### Caractéristiques principales :
 
-* 
-**Type de QA** : Domaine fermé (Closed-Domain).
+* **Type de QA** : Domaine fermé (Closed-Domain).
 
 
-* 
-**Modèle** : Réseau de neurones profonds (Deep Neural Network).
+* **Modèle** : Réseau de neurones profonds (Deep Neural Network).
 
 
-* 
-**Input** : Un paragraphe (contexte) et une question associée.
+* **Input** : Un paragraphe (contexte) et une question associée.
 
 
-* 
-**Output** : Une réponse intelligible extraite du texte.
+* **Output** : Une réponse intelligible extraite du texte.
 
 
 
@@ -31,16 +27,13 @@ Le système est conçu pour traiter des questions de type "factoïdes" (ex: "Où
 
 Nous utilisons le **Stanford Question Answering Dataset (SQuAD) 2.0**.
 
-* 
-**Structure** : Le dataset est composé de titres, de contextes (paragraphes), de questions et de réponses acceptées.
+* **Structure** : Le dataset est composé de titres, de contextes (paragraphes), de questions et de réponses acceptées.
 
 
-* 
-**Format** : Les données sont fournies au format JSON.
+* **Format** : Les données sont fournies au format JSON.
 
 
-* 
-**Spécificité** : Chaque réponse possède un indicateur `answer_start` précisant sa position exacte dans le texte. Les questions sans solution (is_impossible == true) ont été écartées pour ce projet.
+* **Spécificité** : Chaque réponse possède un indicateur `answer_start` précisant sa position exacte dans le texte. Les questions sans solution (is_impossible == true) ont été écartées pour ce projet.
 
 
 
@@ -50,20 +43,16 @@ Nous utilisons le **Stanford Question Answering Dataset (SQuAD) 2.0**.
 
 Conformément aux exigences du projet, notre approche inclut :
 
-1. 
-**Prétraitement des données** : Nettoyage et préparation du texte pour l'entraînement.
+1. **Prétraitement des données** : Nettoyage et préparation du texte pour l'entraînement.
 
 
-2. 
-**Modélisation** : Implémentation d'un modèle neuronal dont chaque couche et algorithme est documenté.
+2. **Modélisation** : Implémentation d'un modèle neuronal dont chaque couche et algorithme est documenté.
 
 
-3. 
-**Entraînement** : Utilisation de **Google Colab** pour la puissance de calcul GPU, avec des sauvegardes régulières sur Google Drive.
+3. **Entraînement** : Utilisation de **Google Colab** pour la puissance de calcul GPU, avec des sauvegardes régulières sur Google Drive.
 
 
-4. 
-**Optimisation** : Suivi des performances et du réglage des hyperparamètres (potentiellement via Tensorboard).
+4. **Optimisation** : Suivi des performances et du réglage des hyperparamètres (potentiellement via Tensorboard).
 
 
 
