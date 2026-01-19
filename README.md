@@ -1,23 +1,23 @@
 # NLP Final Project: Automated Question Answering System
 
-Ce dépôt contient le projet de fin d'études réalisé dans le cadre du cours de Master 2 (M2) intitulé "Natural Language Processing". L'objectif est de développer un système de Question Answering (QA) en domaine fermé capable de répondre intelligemment à des questions posées par des humains sur un texte donné.
+This repository contains the final project realized within the framework of the Master 2 (M2) course titled "Natural Language Processing". The objective is to develop a Closed-Domain Question Answering (QA) system capable of intelligently answering questions asked by humans on a given text.
 
-## 📋 Description du Projet
+## 📋 Project Description
 
-Le système est conçu pour traiter des questions de type "factoïdes" (ex: "Où se situe le musée du Louvre ?") à partir d'un paragraphe fourni en entrée. Le modèle doit extraire ou générer la réponse correcte en se basant uniquement sur le contexte fourni.
+The system is designed to process "factoid" questions (e.g., "Where is the Louvre Museum located?") based on an input paragraph. The model must extract or generate the correct answer relying solely on the provided context.
 
-### Caractéristiques principales :
+### Main Characteristics:
 
-* **Type de QA** : Domaine fermé (Closed-Domain).
-
-
-* **Modèle** : Réseau de neurones profonds (Deep Neural Network).
+* **QA Type**: Closed-Domain.
 
 
-* **Input** : Un paragraphe (contexte) et une question associée.
+* **Model**: Deep Neural Network.
 
 
-* **Output** : Une réponse intelligible extraite du texte.
+* **Input**: A paragraph (context) and an associated question.
+
+
+* **Output**: An intelligible answer extracted from the text.
 
 
 
@@ -25,58 +25,58 @@ Le système est conçu pour traiter des questions de type "factoïdes" (ex: "Où
 
 ## 📊 Dataset
 
-Nous utilisons le **Stanford Question Answering Dataset (SQuAD) 2.0**.
+We use the **Stanford Question Answering Dataset (SQuAD) 2.0**.
 
-* **Structure** : Le dataset est composé de titres, de contextes (paragraphes), de questions et de réponses acceptées.
-
-
-* **Format** : Les données sont fournies au format JSON.
+* **Structure**: The dataset is composed of titles, contexts (paragraphs), questions, and accepted answers.
 
 
-* **Spécificité** : Chaque réponse possède un indicateur `answer_start` précisant sa position exacte dans le texte. Les questions sans solution (is_impossible == true) ont été écartées pour ce projet.
+* **Format**: Data is provided in JSON format.
 
 
-
----
-
-## 🛠️ Architecture et Méthodologie
-
-Conformément aux exigences du projet, notre approche inclut :
-
-1. **Prétraitement des données** : Nettoyage et préparation du texte pour l'entraînement.
-
-
-2. **Modélisation** : Implémentation d'un modèle neuronal dont chaque couche et algorithme est documenté.
-
-
-3. **Entraînement** : Utilisation de **Google Colab** pour la puissance de calcul GPU, avec des sauvegardes régulières sur Google Drive.
-
-
-4. **Optimisation** : Suivi des performances et du réglage des hyperparamètres (potentiellement via Tensorboard).
+* **Specificity**: Each answer has an `answer_start` indicator specifying its exact position in the text. Questions without a solution (is_impossible == true) have been discarded for this project.
 
 
 
 ---
 
-## 🚀 Présentation et Démonstration
+## 🛠️ Architecture and Methodology
 
-Le projet fait l'objet d'une présentation de 15 minutes incluant :
+In accordance with project requirements, our approach includes:
 
-* La méthodologie et l'intuition derrière le modèle choisi.
-
-
-* Une description complète des couches du réseau de neurones.
+1. **Data Preprocessing**: Cleaning and preparation of text for training.
 
 
-* Une comparaison des résultats obtenus par rapport à l'état de l'art.
+2. **Modeling**: Implementation of a neural model where each layer and algorithm is documented.
 
 
-* Une **démonstration en direct** via un notebook pré-chargé.
+3. **Training**: Use of **Google Colab** for GPU computing power, with regular backups to Google Drive.
+
+
+4. **Optimization**: Performance monitoring and hyperparameter tuning (potentially via TensorBoard).
 
 
 
 ---
 
-## 👥 Équipe
+## 🚀 Presentation and Demonstration
 
-Projet réalisé par une équipe de 3 étudiants : **Alon DEBASC**, **Axel STOLTZ** et **Thibault CHESNEL** sous la direction de l'instructeur **Khodor Hammoud**.
+The project is the subject of a 15-minute presentation including:
+
+* The methodology and intuition behind the chosen model.
+
+
+* A complete description of the neural network layers.
+
+
+* A comparison of results obtained versus the state of the art.
+
+
+* A **live demonstration** via a pre-loaded notebook.
+
+
+
+---
+
+## 👥 Team
+
+Project realized by a team of 3 students: **Alon DEBASC**, **Axel STOLTZ**, and **Thibault CHESNEL** under the supervision of instructor **Khodor Hammoud**.
