@@ -8,7 +8,7 @@ To successfully deliver a production-grade machine learning system that satisfie
 | :--- | :--- | :--- |
 | **Thibault CHESNEL** | **Data Engineering & CI/CD** | Dataset Loading/Preprocessing (NLP), Data Versioning/DVC, GitHub Actions (CI/CD Pipelines), Unit Tests. |
 | **Axel STOLTZ** | **Model Architect & Backend API** | Neural Network Design (NLP), Python Backend (FastAPI/Flask API), MLflow Tracking, Integration Tests. |
-| **Alon DEBASC** | **Training, Frontend & Deployment** | Model Training & Tuning (NLP), Staging/Prod Deployment, Model Promotion Gates, React/Next.js UI, E2E Tests. |
+| **Alon DEBASC** | **Training, Frontend, Database & Deployment** | Model Training & Tuning (NLP), Supabase DB, Staging/Prod Deployment, Model Promotion Gates, React/Next.js UI, E2E Tests. |
 
 ---
 
@@ -39,14 +39,15 @@ To successfully deliver a production-grade machine learning system that satisfie
     *   Integrate **MLflow** experiments and Model Registry (logging metrics, parameters, and model weights).
     *   Write the required **Integration Tests** uniting the model within the backend service.
 
-### 🧑‍💻 Alon DEBASC: Training, Frontend & Deployment (The Engine & Face)
-**Goal:** Train and hyper-tune the NLP model, present it through a user-friendly frontend, and securely deploy the full system.
+### 🧑‍💻 Alon DEBASC: Training, Frontend, Database & Deployment (The Engine & Face)
+**Goal:** Train and hyper-tune the NLP model, present it through a user-friendly frontend, securely manage the database, and deploy the full system.
 
 *   **NLP Focus (Training Loop):**
     *   Implement the main optimization loop (Forward -> Loss -> Backward -> Step).
     *   Tune Hyperparameters and maintain Google Colab training efficiency.
-*   **MLOps Focus (Promotion & Web App):**
+*   **MLOps Focus (Database, Promotion & Web App):**
     *   Build the **Node.js Frontend** (React/Next.js) for the interactive QA Assistant Web UI (including the user feedback loop for data augmentation).
+    *   Setup and manage a **Database (e.g., Supabase / Neon)** to securely store the user feedback data (`(Context, Question, Answer)` triplets) before DVC augmentation.
     *   Manage **Cloud Deployment** (e.g., Render, Railway) ensuring isolated `dev`, `staging`, and `main` environments via 12-Factor App methodology.
     *   Implement **Model Promotion Quality Gates** (e.g., stopping deployment if the candidate model fails the F1 Score threshold).
     *   Write **End-to-End (E2E) Tests** for the full application stack.
