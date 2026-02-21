@@ -1,68 +1,63 @@
-# Work Division: NLP Final Project (Question Answering System)
+# Work Division: NLP & MLOps Final Project (QA System Web App)
 
 ## 👥 Team Roles Overview
 
+To successfully deliver a production-grade machine learning system that satisfies the requirements for both the NLP and MLOps projects, the responsibilities have been cross-functionally divided. Each member contributes to both the core Machine Learning modeling (NLP) and the Engineering/Deployment lifecycle (MLOps).
+
 | Role | Focus Area | Primary Responsibilities |
 | :--- | :--- | :--- |
-| **Thibault CHESNEL** | **Data & Evaluation** | Dataset loading, Preprocessing, Tokenization, Evaluation Metrics. |
-| **Axel STOLTZ** | **Model Architecture** | Neural Network Design, Layer Implementation, Forward Pass Logic. |
-| **Alon DEBASC** | **Training & Ops** | Training Loop, Optimization, Checkpointing, Colab/GPU Setup, Experiments, GUI Setup. |
+| **Thibault CHESNEL** | **Data Engineering & CI/CD** | Dataset Loading/Preprocessing (NLP), Data Versioning/DVC, GitHub Actions (CI/CD Pipelines), Unit Tests. |
+| **Axel STOLTZ** | **Model Architect & Backend API** | Neural Network Design (NLP), Python Backend (FastAPI/Flask API), MLflow Tracking, Integration Tests. |
+| **Alon DEBASC** | **Training, Frontend & Deployment** | Model Training & Tuning (NLP), Staging/Prod Deployment, Model Promotion Gates, React/Next.js UI, E2E Tests. |
 
 ---
 
 ## 🛠️ Detailed Responsibilities
 
-### 🧑💻 Thibault CHESNEL: Data Engineer (The Foundation)
-**Goal:** Ensure the model is fed clean, correctly shaped data and can be evaluated accurately.
+### 🧑‍💻 Thibault CHESNEL: Data Engineering & CI/CD (The Pipeline)
+**Goal:** Ensure the model is fed clean, versioned data and that all code/models are automatically tested and built safely.
 
-*   **Dataset Handling**:
-    *   Load and parse **SQuAD 2.0** JSON data.
+*   **NLP Focus (Data Engine):**
+    *   Load and parse **SQuAD 2.0** JSON data. Add cleaning and tokenization.
     *   Separate Data into Train, Validation, and Test sets.
-    *   Handle `is_impossible` questions (filter them out as per requirements).
-*   **Preprocessing & Tokenization**:
-    *   Implement text cleaning (lowercasing, punctuation removal).
-    *   Build Vocabulary and Word Embeddings (Glossary/Index mapping).
-    *   Convert Contexts and Questions into numerical indices/tensors.
-    *   **Crucial**: Map `answer_start` character indices to token indices.
-*   **Evaluation Metrics**:
-    *   Implement **Exact Match (EM)** score.
-    *   Implement **F1 Score**.
-    *   Create a robust validation function to compare specific predictions vs. ground truth.
+    *   Implement **Exact Match (EM)** and **F1 Score** evaluation metrics.
+*   **MLOps Focus (Data & Operations):**
+    *   Setup and manage **DVC** (Data Version Control) to track raw training data remotely.
+    *   Manage data augmentation (incorporating new SQuAD-format data collected from the Web UI).
+    *   Create **GitHub Actions** CI/CD pipelines (PR verification, Unit tests).
+    *   Write the required **Unit Tests** for the data processing functions.
 
-### 🧑💻 Axel STOLTZ: Model Architect (The Brain)
-**Goal:** Build the Deep Neural Network that processes the inputs and predicts the answer span.
+### 🧑‍💻 Axel STOLTZ: Model Architect & Backend API (The Brain & API)
+**Goal:** Build the Deep Neural Network that processes the inputs, and wrap it in a robust versioned backend for inference.
 
-*   **Model Design**:
-    *   Define the PyTorch/TensorFlow Module structure.
-    *   **Embedding Layer**: Implement word embeddings (Glove, Word2Vec, or Iearned).
-*   **Core Architecture**:
-    *   Implement Encoding Layers (RNNs, LSTMs, GRUs, or Transformers/Attention mechanisms).
-    *   Implement Context-Question Interaction layers (Attention mechanisms, etc.).
-*   **Output Layer**:
-    *   Design the output head to predict `Start Index` and `End Index` logits.
-    *   Ensure model handles variable-length sequences (Padding/Masking logic).
-*   **Documentation**:
-    *   Document every layer and algorithm choice as required by the project description.
+*   **NLP Focus (Core Architecture):**
+    *   Define the PyTorch/TensorFlow Module structure (Encoding, Attention mechanisms).
+    *   Design the Output Layer to predict `Start Index` and `End Index` logits.
+    *   Document layer implementations and algorithms.
+*   **MLOps Focus (Tracking & Serving):**
+    *   Build the **Python Backend** (using FastAPI or Flask) to serve the model as an API endpoint to the frontend.
+    *   Integrate **MLflow** experiments and Model Registry (logging metrics, parameters, and model weights).
+    *   Write the required **Integration Tests** uniting the model within the backend service.
 
-### 🧑💻 Alon DEBASC: MLOps & Training Engineer (The Engine)
-**Goal:** Create the environment where the model learns, optimizes, and improves.
+### 🧑‍💻 Alon DEBASC: Training, Frontend & Deployment (The Engine & Face)
+**Goal:** Train and hyper-tune the NLP model, present it through a user-friendly frontend, and securely deploy the full system.
 
-*   **Training Loop**:
-    *   Implement the main optimization loop (Forward pass -> Loss Calculation -> Backward pass -> Optimizer Step).
-    *   Define the Loss Function (e.g., CrossEntropyLoss for Start and End pointers).
-*   **Optimization**:
-    *   Tune Hyperparameters (Learning Rate, Batch Size, Dropout, Hidden Dims).
-    *   Setup Optimizers (Adam, SGD, etc.).
-*   **Infrastructure & Monitoring**:
-    *   **Google Colab Setup**: Ensure GPU acceleration is correctly utilized.
-    *   **Checkpointing**: Implement logic to save and load model state (`model.pt`) to/from Google Drive to prevent data loss.
-    *   **Visualization**: Integrate **TensorBoard** to track Loss and Accuracy curves over epochs.
-    *   Create the "Live Demo" notebook logic.
+*   **NLP Focus (Training Loop):**
+    *   Implement the main optimization loop (Forward -> Loss -> Backward -> Step).
+    *   Tune Hyperparameters and maintain Google Colab training efficiency.
+*   **MLOps Focus (Promotion & Web App):**
+    *   Build the **Node.js Frontend** (React/Next.js) for the interactive QA Assistant Web UI (including the user feedback loop for data augmentation).
+    *   Manage **Cloud Deployment** (e.g., Render, Railway) ensuring isolated `dev`, `staging`, and `main` environments via 12-Factor App methodology.
+    *   Implement **Model Promotion Quality Gates** (e.g., stopping deployment if the candidate model fails the F1 Score threshold).
+    *   Write **End-to-End (E2E) Tests** for the full application stack.
 
 ---
 
-## 🔄 Collaboration Points (Integration)
+## 🔄 Collaboration Points & Workflows
 
-*   **Dev 1 & Dev 2**: Agree on **Input Shapes** (Batch Size, Seq Length) and **Embedding Dimensions**.
-*   **Dev 2 & Dev 3**: Agree on the model's `forward()` output format (Logits? Softmax?) to ensure the Loss Function is applied correctly.
-*   **All**: Weekly sync to merge code and ensure the Data Generator feeds the Model correctly for the Training Loop.
+*   **Git Branching Model**: All work is strictly done on `feature/*` branches, merged into `dev` after passing PR gates, then promoted to `staging` and finally `main`.
+*   **Model Lifecycle**: 
+    1. Training uses DVC-tracked data and logs metrics to MLflow.
+    2. Candidate models are pushed to the Model Registry.
+    3. Pipeline automatically deploys the staging app with the candidate model.
+    4. Only upon passing quality gates does the model reach `main` (Production).
