@@ -52,6 +52,23 @@ The foundational data for this project comes from the **Stanford Question Answer
 * **Frontend**: React/Next.js interactive user interface.
 * **Deployment**: Containerized and deployed on Cloud PaaS (e.g., Render, Railway) with environment-specific configurations.
 
+---
+
+## 🏃‍♂️ How to Run
+
+### 1. Backend (FastAPI)
+To run the Python backend API locally:
+
+1. Ensure your virtual environment is created and activated (e.g., `uv venv` then `source .venv/bin/activate`).
+2. Install the required dependencies:
+   ```bash
+   uv sync
+   ```
+3. Start the FastAPI development server:
+   ```bash
+   uv run uvicorn api.main:app --reload
+   ```
+4. Access the interactive API documentation at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
 ---
 
