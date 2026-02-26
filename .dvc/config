@@ -1,0 +1,4 @@
+[core]
+    remote = shared
+['remote "shared"']
+    url = /Users/tibochsnl/Library/CloudStorage/OneDrive-Efrei/M2/S9/NLP/dvc-storage

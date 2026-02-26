@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from api.routers import health, qa
+
+from api.routers import data, health, qa
 
 app = FastAPI(
     title="Document QA Assistant API",
@@ -9,6 +10,8 @@ app = FastAPI(
 
 app.include_router(health.router)
 app.include_router(qa.router, prefix="/api/v1")
+app.include_router(data.router, prefix="/api/v1")
+
 
 @app.get("/")
 async def root():
