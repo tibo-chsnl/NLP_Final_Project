@@ -41,4 +41,7 @@ def squad_json_to_dataframe(
                     }
                 )
 
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    df = df[df["is_impossible"] == False]
+
+    return df
