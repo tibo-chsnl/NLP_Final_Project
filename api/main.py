@@ -10,6 +10,7 @@ app = FastAPI(
 app.include_router(health.router)
 app.include_router(qa.router, prefix="/api/v1")
 
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Document QA Assistant API"}

@@ -1,4 +1,4 @@
 [core]
-    remote = gdrive
-['remote "gdrive"']
-    url = gdrive://1XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    remote = shared
+['remote "shared"']
+    url = /Users/tibochsnl/Library/CloudStorage/OneDrive-Efrei/M2/S9/NLP/dvc-storage
