@@ -1,8 +1,10 @@
 """Tests for SQuAD data loader."""
 
 import json
+
 import pytest
-from src.data.loader import load_squad, load_squad_from_dict, SQuADDataset
+
+from src.data.loader import SQuADDataset, load_squad, load_squad_from_dict
 
 SAMPLE_SQUAD = {
     "version": "v2.0-test",

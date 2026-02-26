@@ -1,11 +1,13 @@
 """Tests for data augmentation pipeline."""
 
 import json
+
 import pytest
+
 from src.data.augmentation import (
-    create_squad_entry,
     augment_dataset,
     augment_from_triplets,
+    create_squad_entry,
 )
 
 

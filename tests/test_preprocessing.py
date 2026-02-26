@@ -1,11 +1,11 @@
 """Tests for text preprocessing and tokenization."""
 
 from src.data.preprocessing import (
-    clean_text,
-    tokenize,
-    normalize_answer,
     build_vocabulary,
+    clean_text,
+    normalize_answer,
     text_to_indices,
+    tokenize,
 )
 
 

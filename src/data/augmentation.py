@@ -50,9 +50,7 @@ def create_squad_entry(
                     {
                         "id": str(uuid.uuid4()),
                         "question": question,
-                        "answers": [
-                            {"text": answer_text, "answer_start": answer_start}
-                        ],
+                        "answers": [{"text": answer_text, "answer_start": answer_start}],
                         "is_impossible": False,
                     }
                 ],

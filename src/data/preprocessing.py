@@ -90,9 +90,7 @@ def build_vocabulary(
     return vocab
 
 
-def text_to_indices(
-    text: str, vocab: dict[str, int], max_len: int | None = None
-) -> list[int]:
+def text_to_indices(text: str, vocab: dict[str, int], max_len: int | None = None) -> list[int]:
     """Convert text to a list of vocabulary indices.
 
     Args:

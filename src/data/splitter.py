@@ -38,9 +38,7 @@ def split_dataset(
         ValueError: If ratios don't sum to 1.0.
     """
     if abs((train_ratio + val_ratio + test_ratio) - 1.0) > 1e-6:
-        raise ValueError(
-            f"Ratios must sum to 1.0, got {train_ratio + val_ratio + test_ratio}"
-        )
+        raise ValueError(f"Ratios must sum to 1.0, got {train_ratio + val_ratio + test_ratio}")
 
     # Group examples by context to prevent data leakage
     context_groups: dict[str, list[QAExample]] = {}

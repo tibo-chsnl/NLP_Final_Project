@@ -17,9 +17,7 @@ class AnswerResponse(BaseModel):
 @router.post("/ask", response_model=AnswerResponse)
 async def ask_question(request: QuestionRequest):
     if not request.context or not request.question:
-        raise HTTPException(
-            status_code=400, detail="Context and question cannot be empty"
-        )
+        raise HTTPException(status_code=400, detail="Context and question cannot be empty")
 
     # TODO: Connect to the NLP model to get the answer
     # For now, return a mock response
