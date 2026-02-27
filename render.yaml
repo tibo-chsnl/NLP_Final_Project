@@ -1,0 +1,72 @@
+# Render Blueprint — Infrastructure as Code
+# Defines all 4 web services for staging and production.
+# Deploy via: Render Dashboard → New → Blueprint → Select this repo
+
+services:
+  # ===========================
+  # STAGING ENVIRONMENT
+  # ===========================
+  - type: web
+    name: qa-backend-staging
+    runtime: python
+    region: frankfurt
+    plan: free
+    branch: staging
+    buildCommand: pip install uv && uv sync
+    startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: staging
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+    autoDeploy: true
+
+  - type: web
+    name: qa-frontend-staging
+    runtime: node
+    region: frankfurt
+    plan: free
+    branch: staging
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: ENVIRONMENT
+        value: staging
+      - key: NODE_VERSION
+        value: "20"
+    autoDeploy: true
+
+  # ===========================
+  # PRODUCTION ENVIRONMENT
+  # ===========================
+  - type: web
+    name: qa-backend-prod
+    runtime: python
+    region: frankfurt
+    plan: free
+    branch: main
+    buildCommand: pip install uv && uv sync
+    startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+    autoDeploy: true
+
+  - type: web
+    name: qa-frontend-prod
+    runtime: node
+    region: frankfurt
+    plan: free
+    branch: main
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+    autoDeploy: true
