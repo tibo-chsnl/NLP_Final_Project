@@ -35,6 +35,12 @@ services:
         value: staging
       - key: NODE_VERSION
         value: "20"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: BACKEND_URL
+        sync: false
     autoDeploy: true
 
   # ===========================
@@ -69,4 +75,10 @@ services:
         value: production
       - key: NODE_VERSION
         value: "20"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: BACKEND_URL
+        sync: false
     autoDeploy: true
