@@ -6,7 +6,7 @@ services:
     environment:
       - BACKEND_URL=http://backend:8000
       - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - SUPABASE_KEY=${SUPABASE_KEY}
     depends_on:
       - backend
 

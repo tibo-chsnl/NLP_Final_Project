@@ -10,9 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Render (Staging)
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      - name: Deploy Frontend to Render (Staging)
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-${{ secrets.RENDER_STAGING_FRONTEND_ID }}?key=${{ secrets.RENDER_API_KEY }}"
-          curl -X POST "https://api.render.com/deploy/srv-${{ secrets.RENDER_STAGING_BACKEND_ID }}?key=${{ secrets.RENDER_API_KEY }}"
+          curl -X POST "https://api.render.com/deploy/${{ secrets.RENDER_STAGING_FRONTEND_ID }}?key=${{ secrets.RENDER_API_KEY }}"
+
+      - name: Deploy Backend to Render (Staging)
+        run: |
+          curl -X POST "https://api.render.com/deploy/${{ secrets.RENDER_STAGING_BACKEND_ID }}?key=${{ secrets.RENDER_API_KEY }}"
