@@ -6,12 +6,20 @@ export async function POST(req: NextRequest) {
   const backendUrl = process.env.BACKEND_URL;
   if (backendUrl) {
     try {
-      const res = await fetch(`${backendUrl}/predict`, {
+      const res = await fetch(`${backendUrl}/api/v1/qa/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ context, question }),
       });
-      return NextResponse.json(await res.json());
+      const data = await res.json();
+      const answerText = data.answer || "";
+      const start = context.indexOf(answerText);
+      return NextResponse.json({
+        text: answerText,
+        start: start >= 0 ? start : 0,
+        end: start >= 0 ? start + answerText.length : 0,
+        confidence: data.confidence || 0,
+      });
     } catch {}
   }
 

@@ -9,19 +9,18 @@ that a question is unanswerable.
 import argparse
 import collections
 import json
-import numpy as np
 import os
 import re
 import string
 import sys
 
+import numpy as np
+
 OPTS = None
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        "Official evaluation script for SQuAD version 2.0."
-    )
+    parser = argparse.ArgumentParser("Official evaluation script for SQuAD version 2.0.")
     parser.add_argument("data_file", metavar="data.json", help="Input data JSON file.")
     parser.add_argument("pred_file", metavar="pred.json", help="Model predictions.")
     parser.add_argument(
@@ -119,9 +118,7 @@ def get_raw_scores(dataset, preds):
         for p in article["paragraphs"]:
             for qa in p["qas"]:
                 qid = qa["id"]
-                gold_answers = [
-                    a["text"] for a in qa["answers"] if normalize_answer(a["text"])
-                ]
+                gold_answers = [a["text"] for a in qa["answers"] if normalize_answer(a["text"])]
                 if not gold_answers:
                     # For unanswerable questions, only correct answer is empty string
                     gold_answers = [""]
@@ -284,9 +281,7 @@ def find_best_thresh(preds, scores, na_probs, qid_to_has_ans):
 
 
 def find_all_best_thresh(main_eval, preds, exact_raw, f1_raw, na_probs, qid_to_has_ans):
-    best_exact, exact_thresh = find_best_thresh(
-        preds, exact_raw, na_probs, qid_to_has_ans
-    )
+    best_exact, exact_thresh = find_best_thresh(preds, exact_raw, na_probs, qid_to_has_ans)
     best_f1, f1_thresh = find_best_thresh(preds, f1_raw, na_probs, qid_to_has_ans)
     main_eval["best_exact"] = best_exact
     main_eval["best_exact_thresh"] = exact_thresh
@@ -309,12 +304,8 @@ def main():
     has_ans_qids = [k for k, v in qid_to_has_ans.items() if v]
     no_ans_qids = [k for k, v in qid_to_has_ans.items() if not v]
     exact_raw, f1_raw = get_raw_scores(dataset, preds)
-    exact_thresh = apply_no_ans_threshold(
-        exact_raw, na_probs, qid_to_has_ans, OPTS.na_prob_thresh
-    )
-    f1_thresh = apply_no_ans_threshold(
-        f1_raw, na_probs, qid_to_has_ans, OPTS.na_prob_thresh
-    )
+    exact_thresh = apply_no_ans_threshold(exact_raw, na_probs, qid_to_has_ans, OPTS.na_prob_thresh)
+    f1_thresh = apply_no_ans_threshold(f1_raw, na_probs, qid_to_has_ans, OPTS.na_prob_thresh)
     out_eval = make_eval_dict(exact_thresh, f1_thresh)
     if has_ans_qids:
         has_ans_eval = make_eval_dict(exact_thresh, f1_thresh, qid_list=has_ans_qids)
@@ -323,9 +314,7 @@ def main():
         no_ans_eval = make_eval_dict(exact_thresh, f1_thresh, qid_list=no_ans_qids)
         merge_eval(out_eval, no_ans_eval, "NoAns")
     if OPTS.na_prob_file:
-        find_all_best_thresh(
-            out_eval, preds, exact_raw, f1_raw, na_probs, qid_to_has_ans
-        )
+        find_all_best_thresh(out_eval, preds, exact_raw, f1_raw, na_probs, qid_to_has_ans)
     if OPTS.na_prob_file and OPTS.out_image_dir:
         run_precision_recall_analysis(
             out_eval, exact_raw, f1_raw, na_probs, qid_to_has_ans, OPTS.out_image_dir

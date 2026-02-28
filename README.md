@@ -52,6 +52,73 @@ The foundational data for this project comes from the **Stanford Question Answer
 * **Frontend**: React/Next.js interactive user interface.
 * **Deployment**: Containerized and deployed on Cloud PaaS (e.g., Render, Railway) with environment-specific configurations.
 
+---
+
+## 🏃‍♂️ Getting Started
+
+### Prerequisites
+* **Python 3.12+**
+* **[uv](https://docs.astral.sh/uv/)** — Python package manager
+* **OneDrive Efrei** — synced on your machine (for accessing training data)
+
+### 1. Clone & Install
+
+```bash
+git clone <repo-url>
+cd NLP_MLOPS_Project
+uv sync --dev
+```
+
+### 2. Setup Data (DVC)
+
+The training data (~46MB) is stored via **DVC** on a shared OneDrive folder. Each team member needs to set this up **once**:
+
+1. **Open the shared folder** in your browser:
+   👉 [DVC Storage — OneDrive](https://efrei365net-my.sharepoint.com/:f:/g/personal/thibault_chesnel_efrei_net/IgDUIyJaL3Z9Q6Q4r8ch2WG-Ada88vuYFq3tm_xLQe-949Q?e=cYMPZa)
+
+2. **Click "Ajouter un raccourci à Mes fichiers"** (Add shortcut to My files).
+   This syncs the folder locally via OneDrive.
+
+3. **Run the setup script** with **your** local synced path:
+   ```bash
+   # macOS example:
+   ./scripts/setup_dvc.sh ~/Library/CloudStorage/OneDrive-Efrei/M2/S9/NLP/dvc-storage
+
+   # Windows (Git Bash) example:
+   ./scripts/setup_dvc.sh /c/Users/<YourName>/OneDrive\ -\ Efrei/M2/S9/NLP/dvc-storage
+   ```
+
+4. **Pull the data:**
+   ```bash
+   uv run dvc pull
+   ```
+   You should now have `data/train-v2.0.json` and `data/dev-v2.0.json`.
+
+### 3. Run the Backend (FastAPI)
+
+```bash
+uv run uvicorn api.main:app --reload
+```
+API docs available at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+### 4. Run Tests & Linting
+
+```bash
+uv run pytest tests/ -v        # Run all tests
+uv run ruff check .             # Lint
+uv run ruff format .            # Auto-format
+```
+
+### 5. Git Workflow
+
+All work follows the branching strategy: `feature/*` → `dev` → `staging` → `main`.
+
+```bash
+git checkout -b feature/my-feature dev
+# ... make changes ...
+git push origin feature/my-feature
+# → Open a Pull Request to dev
+```
 
 ---
 
