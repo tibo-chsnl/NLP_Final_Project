@@ -12,3 +12,5 @@ wheels/
 
 # Model checkpoints (binary weights)
 checkpoints/
+mlruns/
+mlflow.db
