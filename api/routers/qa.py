@@ -19,10 +19,16 @@ async def ask_question(request: QuestionRequest):
     if not request.context or not request.question:
         raise HTTPException(status_code=400, detail="Context and question cannot be empty")
 
-    # TODO: Connect to the NLP model to get the answer
-    # For now, return a mock response
     try:
-        mock_answer = "This is a placeholder answer."
-        return AnswerResponse(answer=mock_answer, confidence=0.95)
+        from api.inference import get_inference_pipeline
+        pipeline = get_inference_pipeline()
+        
+        # Predict uses the PyTorch model
+        result = pipeline.predict(request.context, request.question)
+        
+        return AnswerResponse(
+            answer=result["answer"],
+            confidence=result["confidence"]
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
