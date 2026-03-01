@@ -12,6 +12,9 @@ dependencies = [
     "seaborn>=0.13.2",
     "fastapi>=0.115.0",
     "uvicorn>=0.34.0",
+    "mlflow>=3.10.0",
+    "dagshub>=0.6.8",
+    "python-dotenv>=1.2.1",
 ]
 
 [dependency-groups]

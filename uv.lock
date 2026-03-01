@@ -799,11 +799,14 @@ name = "document-qa-assistant"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "dagshub" },
     { name = "fastapi" },
     { name = "ipykernel" },
     { name = "matplotlib" },
+    { name = "mlflow" },
     { name = "numpy" },
     { name = "pandas" },
+    { name = "python-dotenv" },
     { name = "seaborn" },
     { name = "uvicorn" },
 ]
@@ -822,11 +825,14 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "dagshub", specifier = ">=0.6.8" },
     { name = "fastapi", specifier = ">=0.115.0" },
     { name = "ipykernel", specifier = ">=7.1.0" },
     { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "mlflow", specifier = ">=3.10.0" },
     { name = "numpy", specifier = ">=2.4.1" },
     { name = "pandas", specifier = ">=2.3.3" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "uvicorn", specifier = ">=0.34.0" },
 ]
