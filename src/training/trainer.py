@@ -102,12 +102,20 @@ def train(
     vocab = build_vocab_from_dataset(train_ds, min_freq=min_freq, max_size=max_vocab_size)
 
     train_loader = create_dataloader(
-        train_ds.answerable, vocab, batch_size=batch_size,
-        shuffle=True, max_context_len=max_context_len, max_question_len=max_question_len,
+        train_ds.answerable,
+        vocab,
+        batch_size=batch_size,
+        shuffle=True,
+        max_context_len=max_context_len,
+        max_question_len=max_question_len,
     )
     val_loader = create_dataloader(
-        dev_ds.answerable, vocab, batch_size=batch_size,
-        shuffle=False, max_context_len=max_context_len, max_question_len=max_question_len,
+        dev_ds.answerable,
+        vocab,
+        batch_size=batch_size,
+        shuffle=False,
+        max_context_len=max_context_len,
+        max_question_len=max_question_len,
     )
 
     model = QAModel(
@@ -183,12 +191,15 @@ def train(
             with open(os.path.join(save_dir, "vocab.json"), "w") as f:
                 json.dump(vocab, f)
             with open(os.path.join(save_dir, "config.json"), "w") as f:
-                json.dump({
-                    "vocab_size": len(vocab),
-                    "embedding_dim": embedding_dim,
-                    "hidden_dim": hidden_dim,
-                    "dropout": dropout,
-                }, f)
+                json.dump(
+                    {
+                        "vocab_size": len(vocab),
+                        "embedding_dim": embedding_dim,
+                        "hidden_dim": hidden_dim,
+                        "dropout": dropout,
+                    },
+                    f,
+                )
 
     torch.save(model.state_dict(), os.path.join(save_dir, "last_model.pt"))
 

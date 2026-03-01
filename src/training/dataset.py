@@ -47,12 +47,14 @@ class QADataset(Dataset):
             context_tokens = context_tokens[:max_context_len]
             question_tokens = question_tokens[:max_question_len]
 
-            self.samples.append({
-                "context_tokens": context_tokens,
-                "question_tokens": question_tokens,
-                "start_idx": start_token,
-                "end_idx": end_token,
-            })
+            self.samples.append(
+                {
+                    "context_tokens": context_tokens,
+                    "question_tokens": question_tokens,
+                    "start_idx": start_token,
+                    "end_idx": end_token,
+                }
+            )
 
     def __len__(self):
         return len(self.samples)
@@ -126,7 +128,8 @@ def build_vocab_from_dataset(dataset, min_freq=2, max_size=50000):
     return build_vocabulary(texts, min_freq=min_freq, max_size=max_size)
 
 
-def create_dataloader(examples, vocab, batch_size=32, shuffle=True,
-                      max_context_len=400, max_question_len=60):
+def create_dataloader(
+    examples, vocab, batch_size=32, shuffle=True, max_context_len=400, max_question_len=60
+):
     ds = QADataset(examples, vocab, max_context_len, max_question_len)
     return DataLoader(ds, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn)
