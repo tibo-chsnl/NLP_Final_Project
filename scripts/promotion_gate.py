@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 import mlflow
 
 MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "")

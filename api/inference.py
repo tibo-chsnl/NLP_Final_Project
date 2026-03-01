@@ -80,7 +80,9 @@ class InferencePipeline:
         self.is_dummy = True
 
     def _preprocess(
-        self, context: str, question: str,
+        self,
+        context: str,
+        question: str,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, list]:
         context_tokens = tokenize(context)
         question_tokens = tokenize(question)
@@ -98,7 +100,10 @@ class InferencePipeline:
         return c_tensor, q_tensor, c_mask, q_mask, context_tokens
 
     def _postprocess(
-        self, start_logits: torch.Tensor, end_logits: torch.Tensor, context_tokens: list,
+        self,
+        start_logits: torch.Tensor,
+        end_logits: torch.Tensor,
+        context_tokens: list,
     ) -> Tuple[str, float]:
         start_logits = start_logits.squeeze(0)
         end_logits = end_logits.squeeze(0)
@@ -114,7 +119,7 @@ class InferencePipeline:
         valid_end_logits = end_logits + mask
         end_idx = torch.argmax(valid_end_logits).item()
 
-        answer_tokens = context_tokens[start_idx:end_idx + 1]
+        answer_tokens = context_tokens[start_idx : end_idx + 1]
         answer = " ".join(answer_tokens)
 
         start_prob = torch.softmax(start_logits, dim=0)[start_idx].item()
@@ -155,6 +160,7 @@ class InferencePipeline:
             "confidence": confidence,
             "is_dummy_model": self.is_dummy,
         }
+
 
 pipeline = None
 
