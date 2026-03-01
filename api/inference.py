@@ -31,14 +31,14 @@ class InferencePipeline:
                 self.model = mlflow.pytorch.load_model(model_uri)
                 self.model.to(self.device)
                 self.model.eval()
-                self.is_dummy = False
 
                 vocab_path = CHECKPOINT_DIR / "vocab.json"
                 if vocab_path.exists():
                     with open(vocab_path) as f:
                         self.vocab = json.load(f)
                     self.vocab_size = len(self.vocab)
-                return
+                    self.is_dummy = False
+                    return
             except Exception:
                 pass
 
@@ -130,6 +130,13 @@ class InferencePipeline:
     def predict(self, context: str, question: str) -> Dict[str, Any]:
         if not self.model:
             raise RuntimeError("Model is not initialized.")
+
+        if not context.strip() or not question.strip():
+            return {
+                "answer": "Please provide a non-empty context and question.",
+                "confidence": 0.0,
+                "is_dummy_model": self.is_dummy,
+            }
 
         c_tensor, q_tensor, c_mask, q_mask, context_tokens = self._preprocess(context, question)
 

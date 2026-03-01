@@ -10,13 +10,17 @@ from src.evaluation.metrics import compute_exact_match, compute_f1
 from src.training.dataset import build_vocab_from_dataset, create_dataloader
 
 
-def evaluate(model, dataloader, device):
+def evaluate(model, dataloader, device, vocab=None):
     model.eval()
     total_loss = 0
     total_f1 = 0
     total_em = 0
     count = 0
     loss_fn = nn.CrossEntropyLoss()
+
+    idx_to_word = None
+    if vocab:
+        idx_to_word = {v: k for k, v in vocab.items()}
 
     with torch.no_grad():
         for batch in dataloader:
@@ -54,8 +58,12 @@ def evaluate(model, dataloader, device):
                 pred_tokens = c_ids[ps : max(ps, pe) + 1]
                 gold_tokens = c_ids[gs : ge + 1]
 
-                pred_text = " ".join(str(t) for t in pred_tokens)
-                gold_text = " ".join(str(t) for t in gold_tokens)
+                if idx_to_word:
+                    pred_text = " ".join(idx_to_word.get(t, "<UNK>") for t in pred_tokens)
+                    gold_text = " ".join(idx_to_word.get(t, "<UNK>") for t in gold_tokens)
+                else:
+                    pred_text = " ".join(str(t) for t in pred_tokens)
+                    gold_text = " ".join(str(t) for t in gold_tokens)
 
                 total_f1 += compute_f1(pred_text, gold_text)
                 total_em += compute_exact_match(pred_text, gold_text)
@@ -151,7 +159,7 @@ def train(
             num_batches += 1
 
         train_loss = running_loss / max(num_batches, 1)
-        val_loss, val_f1, val_em = evaluate(model, val_loader, device)
+        val_loss, val_f1, val_em = evaluate(model, val_loader, device, vocab=vocab)
 
         epoch_info = {
             "epoch": epoch + 1,
