@@ -10,6 +10,10 @@ wheels/
 .venv
 .env
 
+# Node.js
+node_modules/
+.next/
+
 # Model checkpoints (binary weights)
 checkpoints/
 mlruns/
