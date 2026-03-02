@@ -13,13 +13,15 @@ export async function POST(req: NextRequest) {
       });
       const data = await res.json();
       const answerText = data.answer || "";
-      const start = context.indexOf(answerText);
-      return NextResponse.json({
-        text: answerText,
-        start: start >= 0 ? start : 0,
-        end: start >= 0 ? start + answerText.length : 0,
-        confidence: data.confidence || 0,
-      });
+      if (!data.is_dummy && answerText.length < context.length * 0.5) {
+        const start = context.indexOf(answerText);
+        return NextResponse.json({
+          text: answerText,
+          start: start >= 0 ? start : 0,
+          end: start >= 0 ? start + answerText.length : 0,
+          confidence: data.confidence || 0,
+        });
+      }
     } catch {}
   }
 
