@@ -4,6 +4,11 @@ This repository contains the integrated final project for the Master 2 (M2) cour
 
 The objective is to develop a Closed-Domain Question Answering (QA) neural network and deploy it as a production-grade Web Application. This project demonstrates the full lifecycle of a machine learning model, from data engineering and model training to CI/CD pipelines, model registry, and cloud deployment.
 
+## 👤 Contributors
+* Alon DEBASC
+* Axel STOLTZ
+* Thibault CHESNEL
+
 ## 📋 Project Description
 
 The system is designed to process "factoid" questions (e.g., "Where is the Louvre Museum located?") based on an input paragraph. The final product is a **"Document QA Assistant" Web Application**, allowing users to interact directly with the model and provide feedback to further augment the training dataset.
