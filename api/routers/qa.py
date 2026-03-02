@@ -22,10 +22,10 @@ async def ask_question(request: QuestionRequest):
     try:
         from api.inference import get_inference_pipeline
         pipeline = get_inference_pipeline()
-        
+
         # Predict uses the PyTorch model
         result = pipeline.predict(request.context, request.question)
-        
+
         return AnswerResponse(
             answer=result["answer"],
             confidence=result["confidence"]
