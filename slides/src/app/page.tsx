@@ -429,7 +429,9 @@ function buildSlides(): Slide[] {
                                 { label: "Backward + Clip Grads" },
                                 { label: "Adam Update" },
                                 { label: "Evaluate on Dev (EM+F1)" },
+                                { label: "� LR Scheduler step" },
                                 { label: "💾 Save if F1 improved" },
+                                { label: "🛑 Early stop if no gain ×3" },
                             ]} />
                         </div>
                     </div>
@@ -437,6 +439,8 @@ function buildSlides(): Slide[] {
                         <span className="badge badge-emerald">Best model saved by validation F1</span>
                         <span className="mx-2 text-slate-600">•</span>
                         <span className="badge badge-indigo">Trained on Google Colab GPU</span>
+                        <span className="mx-2 text-slate-600">•</span>
+                        <span className="badge badge-amber">Early stopping + LR decay</span>
                     </div>
                 </div>
             ),
