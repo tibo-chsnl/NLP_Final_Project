@@ -36,6 +36,73 @@ The foundational data for this project comes from the **Stanford Question Answer
 
 ---
 
+## 🏗️ Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph User
+        Browser[Browser]
+    end
+
+    subgraph "Cloud (Render)"
+        subgraph Frontend["Frontend (Next.js)"]
+            UI[React UI]
+            APIRoute["/api/predict • /api/feedback"]
+        end
+        subgraph Backend["Backend (FastAPI)"]
+            QARouter["/api/v1/qa/ask"]
+            InfPipeline["Inference Pipeline"]
+        end
+    end
+
+    subgraph "Data & Model Layer"
+        DVC["DVC (DagsHub S3)"]
+        MLflow["MLflow Registry (DagsHub)"]
+        Supabase["Supabase (Feedback DB)"]
+    end
+
+    subgraph "CI/CD (GitHub Actions)"
+        CI["PR → dev: Lint + Tests + Docker Build"]
+        CDStaging["Push → staging: Full Tests + Deploy Candidate Model"]
+        CDProd["Push → main: Promotion Gate + Deploy to Prod"]
+        Retrain["Weekly Retrain: Pull Feedback → Fine-Tune → Register"]
+    end
+
+    Browser --> UI
+    UI --> APIRoute
+    APIRoute -->|POST context+question| QARouter
+    QARouter --> InfPipeline
+    InfPipeline -->|loads weights| DVC
+    InfPipeline -->|loads model| MLflow
+    APIRoute -->|POST feedback| Supabase
+
+    Retrain -->|pull feedback| Supabase
+    Retrain -->|pull data| DVC
+    Retrain -->|register model| MLflow
+    CI --> CDStaging
+    CDStaging --> CDProd
+```
+
+## 🔄 CI/CD Pipeline
+
+| Trigger | Workflow | Steps |
+|---|---|---|
+| **PR → `dev`** | `ci.yml` | Lint (Ruff) → Unit & Integration Tests → Docker Build (no push) |
+| **Push → `staging`** | `deploy-staging.yml` | Full test suite → Docker Build → Deploy candidate model to Staging registry → Trigger Render staging deploy → E2E smoke tests |
+| **PR → `main`** | `promotion-gate.yml` | Run MLflow F1 quality gate — blocks merge if threshold not met |
+| **Push → `main`** | `deploy-prod.yml` | Promotion gate (F1 ≥ 0.5) → Promote model to Production stage → Trigger Render production deploy |
+| **Weekly / Manual** | `retrain.yml` | Pull user feedback from Supabase → Fine-tune model → Register in MLflow → Commit DVC pointers |
+
+## 🏆 Model Promotion
+
+1. **Training** — model is trained/fine-tuned and registered in the MLflow Model Registry.
+2. **Staging** — on push to `staging`, the latest model version is transitioned to `Staging` stage and deployed to the staging environment.
+3. **Quality Gate** — on PR `staging → main`, the promotion gate script checks the model's F1 score against a threshold (≥ 0.5).
+4. **Production** — if the gate passes, the model is promoted to `Production` stage, and Render deploys the new version to the production environment.
+5. **Rollback** — if the gate fails, the model stays in `Staging` and production is **not** updated.
+
+---
+
 ## 🛠️ Architecture and MLOps Methodology
 
 ### 1. Model Development (NLP)
