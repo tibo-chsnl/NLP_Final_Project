@@ -1,7 +1,8 @@
 """Download checkpoints directly from DagsHub S3 storage.
 
 Bypasses DVC entirely to avoid filesystem issues on platforms like Render
-where /var/tmp is read-only. Uses only stdlib (no boto3/pyyaml required).
+where /var/tmp is read-only. Uses boto3 (installed via dvc-s3 dependency)
+for proper S3 SigV4 authentication with DagsHub.
 
 Usage:
     python scripts/download_checkpoints.py
@@ -18,12 +19,12 @@ import json
 import os
 import re
 import sys
-import urllib.request
-from base64 import b64encode
 from pathlib import Path
 
+import boto3
+
 # DagsHub S3 configuration (matches .dvc/config)
-DAGSHUB_STORAGE = "https://dagshub.com/akksel1/final_project.s3"
+ENDPOINT_URL = "https://dagshub.com/akksel1/final_project.s3"
 BUCKET = "dvc"
 
 # Paths
@@ -32,50 +33,48 @@ CHECKPOINTS_DIR = PROJECT_ROOT / "checkpoints"
 DVC_FILE = PROJECT_ROOT / "checkpoints.dvc"
 
 
-def md5_to_s3_path(md5_hash: str) -> str:
-    """Convert an MD5 hash to the DVC S3 storage path."""
+def md5_to_s3_key(md5_hash: str) -> str:
+    """Convert an MD5 hash to the DVC S3 storage key."""
     return f"files/md5/{md5_hash[:2]}/{md5_hash[2:]}"
 
 
-def download(url: str, dest: Path, token: str) -> None:
-    """Download a file from DagsHub S3 using Basic auth."""
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    credentials = b64encode(f"{token}:{token}".encode()).decode()
-    req = urllib.request.Request(url, headers={"Authorization": f"Basic {credentials}"})
-    with urllib.request.urlopen(req) as resp, open(dest, "wb") as f:
-        f.write(resp.read())
-
-
 def main():
-    token = os.environ.get("AWS_ACCESS_KEY_ID", "")
-    if not token:
-        print("❌ AWS_ACCESS_KEY_ID not set (should be your DagsHub token)")
+    key = os.environ.get("AWS_ACCESS_KEY_ID", "")
+    secret = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+
+    if not key or not secret:
+        print("❌ AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY not set")
+        print("   Set them to your DagsHub token.")
         sys.exit(1)
 
-    # Parse checkpoints.dvc (simple enough to regex, no pyyaml needed)
+    # Parse checkpoints.dvc (regex, no pyyaml needed)
     if not DVC_FILE.exists():
         print(f"❌ {DVC_FILE} not found")
         sys.exit(1)
 
     dvc_content = DVC_FILE.read_text()
-    md5_match = re.search(r"md5:\s+(\w+\.dir)", dvc_content)
+    md5_match = re.search(r"md5:\s+(\w+)\.dir", dvc_content)
     if not md5_match:
         print("❌ Could not parse directory hash from checkpoints.dvc")
         sys.exit(1)
 
-    dir_md5 = md5_match.group(1).replace(".dir", "")
+    dir_md5 = md5_match.group(1)
     print(f"🔗 Directory hash: {dir_md5}")
 
+    # Create S3 client for DagsHub
+    s3 = boto3.client(
+        "s3",
+        endpoint_url=ENDPOINT_URL,
+        aws_access_key_id=key,
+        aws_secret_access_key=secret,
+    )
+
     # Step 1: Download the .dir manifest (JSON listing all files + hashes)
-    manifest_path = md5_to_s3_path(dir_md5 + ".dir")
-    manifest_url = f"{DAGSHUB_STORAGE}/{BUCKET}/{manifest_path}"
-    tmp_manifest = Path("/tmp/dvc_manifest.json")
-
+    manifest_key = md5_to_s3_key(dir_md5 + ".dir")
     print("📋 Downloading manifest...")
-    download(manifest_url, tmp_manifest, token)
 
-    file_entries = json.loads(tmp_manifest.read_text())
-    tmp_manifest.unlink()
+    response = s3.get_object(Bucket=BUCKET, Key=manifest_key)
+    file_entries = json.loads(response["Body"].read().decode("utf-8"))
     print(f"   Found {len(file_entries)} file(s)")
 
     # Step 2: Download each file
@@ -84,25 +83,22 @@ def main():
     for entry in file_entries:
         relpath = entry["relpath"]
         file_md5 = entry["md5"]
-        file_path = md5_to_s3_path(file_md5)
-        file_url = f"{DAGSHUB_STORAGE}/{BUCKET}/{file_path}"
+        s3_key = md5_to_s3_key(file_md5)
         local_path = CHECKPOINTS_DIR / relpath
+        local_path.parent.mkdir(parents=True, exist_ok=True)
 
         print(f"  📥 Downloading {relpath}...")
-        download(file_url, local_path, token)
+        s3.download_file(BUCKET, s3_key, str(local_path))
 
         # Verify MD5
         actual_md5 = hashlib.md5(local_path.read_bytes()).hexdigest()
         if actual_md5 != file_md5:
             print(f"  ⚠️ MD5 mismatch: expected {file_md5}, got {actual_md5}")
         else:
-            print(f"  ✅ {relpath} verified ({local_path.stat().st_size:,} bytes)")
+            print(f"  ✅ {relpath} ({local_path.stat().st_size:,} bytes)")
 
-    total_size = sum((CHECKPOINTS_DIR / e["relpath"]).stat().st_size for e in file_entries)
-    print(
-        f"\n✅ Downloaded {len(file_entries)} files"
-        f" ({total_size / 1024 / 1024:.1f} MB) to {CHECKPOINTS_DIR}"
-    )
+    total = sum((CHECKPOINTS_DIR / e["relpath"]).stat().st_size for e in file_entries)
+    print(f"\n✅ Downloaded {len(file_entries)} files ({total / 1024 / 1024:.1f} MB)")
 
 
 if __name__ == "__main__":
