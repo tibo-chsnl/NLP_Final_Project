@@ -4,7 +4,7 @@ import sys
 import mlflow
 
 MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "")
-MODEL_NAME = os.environ.get("MODEL_NAME", "qa-model")
+MODEL_NAME = os.environ.get("MODEL_NAME", "QA_Model")
 F1_THRESHOLD = float(os.environ.get("F1_THRESHOLD", "0.5"))
 
 if not MLFLOW_TRACKING_URI:

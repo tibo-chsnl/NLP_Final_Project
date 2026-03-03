@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
-import mlflow.pytorch
 import torch
 
 from model.qa_model import QAModel
@@ -27,16 +26,18 @@ class InferencePipeline:
 
         if use_mlflow:
             try:
-                from src.tracking.mlflow_setup import init_tracking
                 import tempfile
+
                 import mlflow.artifacts
-                
+
+                from src.tracking.mlflow_setup import init_tracking
+
                 init_tracking()
 
                 model_name = os.environ.get("MLFLOW_MODEL_NAME", "QA_Model")
                 model_alias = os.environ.get("MLFLOW_MODEL_ALIAS", "latest")
                 model_uri = f"models:/{model_name}/{model_alias}"
-                
+
                 run_id = os.environ.get("MLFLOW_RUN_ID")
                 if run_id:
                     model_uri = f"runs:/{run_id}/qa-model"
@@ -48,16 +49,22 @@ class InferencePipeline:
 
                 with tempfile.TemporaryDirectory() as tmpdir:
                     try:
-                        vocab_path_downloaded = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/vocab.json", dst_path=tmpdir)
+                        vocab_path_downloaded = mlflow.artifacts.download_artifacts(
+                            artifact_uri=f"{model_uri}/vocab.json",
+                            dst_path=tmpdir,
+                        )
                         with open(vocab_path_downloaded) as f:
                             self.vocab = json.load(f)
                         self.vocab_size = len(self.vocab)
                     except Exception as e:
-                        print(f"⚠️ Failed to download vocab.json from MLflow, using fallback vocab: {e}")
+                        print(
+                            f"⚠️ Failed to download vocab.json from MLflow,"
+                            f" using fallback vocab: {e}"
+                        )
                         self.vocab = {"<PAD>": 0, "<UNK>": 1}
                         self.vocab_size = 50000
                 self.is_dummy = False
-                print(f"✅ Successfully loaded model and vocab from MLflow!")
+                print("✅ Successfully loaded model and vocab from MLflow!")
                 return
             except Exception as e:
                 print(f"⚠️ Failed to load model from MLflow: {e}")
@@ -87,17 +94,12 @@ class InferencePipeline:
             self.is_dummy = False
             return
 
-        self.vocab = {"<PAD>": 0, "<UNK>": 1}
-        self.vocab_size = 10000
-        self.model = QAModel(
-            vocab_size=self.vocab_size,
-            embedding_dim=64,
-            hidden_dim=64,
-            dropout=0.0,
+        raise RuntimeError(
+            "No model available. Ensure one of the following:\n"
+            "  1. Run `uv run dvc pull` to download checkpoints/\n"
+            "  2. Set USE_MLFLOW=true with valid MLFLOW_MODEL_NAME\n"
+            "  3. Train a model with `uv run python scripts/train.py`"
         )
-        self.model.to(self.device)
-        self.model.eval()
-        self.is_dummy = True
 
     def _preprocess(
         self,
