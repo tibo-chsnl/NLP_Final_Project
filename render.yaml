@@ -12,7 +12,7 @@ services:
     region: frankfurt
     plan: free
     branch: staging
-    buildCommand: pip install uv && uv sync --dev && uv run dvc cache dir /tmp/dvc-cache && uv run dvc pull checkpoints/
+    buildCommand: pip install uv && uv sync --dev && TMPDIR=/tmp uv run dvc pull --no-cache checkpoints/
     startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
@@ -58,7 +58,7 @@ services:
     region: frankfurt
     plan: free
     branch: main
-    buildCommand: pip install uv && uv sync --dev && uv run dvc cache dir /tmp/dvc-cache && uv run dvc pull checkpoints/
+    buildCommand: pip install uv && uv sync --dev && TMPDIR=/tmp uv run dvc pull --no-cache checkpoints/
     startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
