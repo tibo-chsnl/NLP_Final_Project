@@ -1,0 +1,185 @@
+name: Deploy to Staging
+
+# ─────────────────────────────────────────────────────────────
+# Triggered on push to staging (i.e. after merging dev → staging).
+#
+# Pipeline:
+#   1. Lint + full test suite
+#   2. Build Docker images (validation)
+#   3. Deploy candidate model from MLflow registry to staging
+#   4. Trigger Render staging deploy
+#   5. Run E2E tests against staging
+# ─────────────────────────────────────────────────────────────
+on:
+  push:
+    branches: [staging]
+
+jobs:
+  # ── 1. Full test suite ──────────────────────────────────────
+  lint-and-test:
+    name: Full Test Suite
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.DAGSHUB_TOKEN }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DAGSHUB_TOKEN }}
+      DVC_TMP_DIR: /tmp/dvc
+      DAGSHUB_USER_NAME: ${{ secrets.DAGSHUB_USER_NAME }}
+      DAGSHUB_REPO_NAME: ${{ secrets.DAGSHUB_REPO_NAME }}
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Ruff lint
+        run: uv run ruff check .
+
+      - name: Ruff format check
+        run: uv run ruff format --check .
+
+      - name: Pull DVC data
+        run: uv run dvc pull
+
+      - name: Run all tests
+        run: uv run pytest tests/ -v --tb=short
+
+  # ── 2. Docker build (validate) ──────────────────────────────
+  docker-build:
+    name: Docker Build (validate)
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: qa-backend:staging-${{ github.sha }}
+
+      - name: Build frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: false
+          tags: qa-frontend:staging-${{ github.sha }}
+
+  # ── 3. Deploy candidate model to staging ────────────────────
+  deploy-staging-model:
+    name: Deploy Candidate Model to Staging
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    env:
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+      MODEL_NAME: ${{ secrets.MODEL_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install MLflow
+        run: pip install mlflow
+
+      - name: Transition latest model to Staging
+        run: |
+          python - <<'SCRIPT'
+          import os, sys, mlflow
+
+          mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+          client = mlflow.tracking.MlflowClient()
+
+          model_name = os.environ.get("MODEL_NAME", "QA_Model")
+          versions = client.search_model_versions(f"name='{model_name}'")
+          if not versions:
+              print(f"No model versions found for '{model_name}'")
+              sys.exit(0)
+
+          latest = max(versions, key=lambda v: int(v.version))
+          print(f"Transitioning {model_name} v{latest.version} → Staging")
+
+          try:
+              client.transition_model_version_stage(
+                  name=model_name, version=latest.version, stage="Staging"
+              )
+          except Exception:
+              client.set_registered_model_alias(model_name, "staging", latest.version)
+          print(f"✅ Model v{latest.version} is now in Staging")
+          SCRIPT
+
+  # ── 4. Trigger Render deploy ────────────────────────────────
+  deploy-render:
+    name: Trigger Render Staging Deploy
+    runs-on: ubuntu-latest
+    needs: [docker-build, deploy-staging-model]
+    steps:
+      - name: Trigger Render deploy hook
+        run: |
+          if [ -n "${{ secrets.RENDER_STAGING_DEPLOY_HOOK }}" ]; then
+            curl -s "${{ secrets.RENDER_STAGING_DEPLOY_HOOK }}" && echo "✅ Render staging deploy triggered"
+          else
+            echo "ℹ️  No RENDER_STAGING_DEPLOY_HOOK set — Render will auto-deploy from staging branch"
+          fi
+
+  # ── 5. E2E smoke test against staging ───────────────────────
+  e2e-staging:
+    name: E2E Tests (Staging)
+    runs-on: ubuntu-latest
+    needs: deploy-render
+    # Give Render a few minutes to spin up
+    env:
+      STAGING_URL: ${{ secrets.STAGING_FRONTEND_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend deps & Playwright
+        working-directory: frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Wait for staging to be ready
+        run: |
+          URL="${STAGING_URL:-http://localhost:3000}"
+          echo "Waiting for $URL to respond..."
+          for i in $(seq 1 30); do
+            if curl -sf "$URL" > /dev/null 2>&1; then
+              echo "✅ Staging is up!"
+              exit 0
+            fi
+            echo "  attempt $i/30 — retrying in 10s..."
+            sleep 10
+          done
+          echo "⚠️  Staging did not respond in time, running E2E anyway"
+
+      - name: Run E2E tests
+        working-directory: frontend
+        run: |
+          if [ -n "$STAGING_URL" ]; then
+            PLAYWRIGHT_BASE_URL="$STAGING_URL" npx playwright test
+          else
+            echo "ℹ️  No STAGING_FRONTEND_URL — skipping live E2E (tested locally via CI)"
+          fi

@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.env
+*.egg-info/
+
+# Node
+node_modules/
+frontend/node_modules/
+slides/node_modules/
+.next/
+frontend/.next/
+
+# Data & models (downloaded at build time)
+data/*.json
+checkpoints/
+
+# Dev / CI
+.git/
+.github/
+.dvc/cache/
+.ruff_cache/
+*.md
+docs/
+notebooks/
+slides/
+tests/
+test-results/
+e2e/
+*.dvc.lock
