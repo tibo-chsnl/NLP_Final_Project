@@ -5,7 +5,11 @@ export async function POST(req: NextRequest) {
   const { context, question, answer, original_answer, positive } = await req.json();
 
   if (!supabase) {
-    return NextResponse.json({ success: true, stored: false });
+    console.warn("Feedback received but Supabase is not configured (SUPABASE_URL / SUPABASE_KEY missing)");
+    return NextResponse.json(
+      { success: false, error: "Feedback service is not configured" },
+      { status: 503 }
+    );
   }
 
   const { error } = await supabase.from("feedback").insert({
