@@ -94,17 +94,12 @@ class InferencePipeline:
             self.is_dummy = False
             return
 
-        self.vocab = {"<PAD>": 0, "<UNK>": 1}
-        self.vocab_size = 10000
-        self.model = QAModel(
-            vocab_size=self.vocab_size,
-            embedding_dim=64,
-            hidden_dim=64,
-            dropout=0.0,
+        raise RuntimeError(
+            "No model available. Ensure one of the following:\n"
+            "  1. Run `uv run dvc pull` to download checkpoints/\n"
+            "  2. Set USE_MLFLOW=true with valid MLFLOW_MODEL_NAME\n"
+            "  3. Train a model with `uv run python scripts/train.py`"
         )
-        self.model.to(self.device)
-        self.model.eval()
-        self.is_dummy = True
 
     def _preprocess(
         self,
