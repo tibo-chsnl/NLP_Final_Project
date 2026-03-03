@@ -15,7 +15,8 @@ dependencies = [
     "mlflow>=3.10.0",
     "dagshub>=0.6.8",
     "python-dotenv>=1.2.1",
-    "torch>=2.10.0",
+    "torch>=2.2.0,<=2.2.2",
+    "tqdm>=4.66.0",
 ]
 
 [dependency-groups]

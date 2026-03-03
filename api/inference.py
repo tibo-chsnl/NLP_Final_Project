@@ -23,24 +23,40 @@ class InferencePipeline:
         self._load_model()
 
     def _load_model(self):
-        run_id = os.environ.get("MLFLOW_RUN_ID")
+        use_mlflow = os.environ.get("USE_MLFLOW", "false").lower() == "true"
 
-        if run_id:
+        if use_mlflow:
             try:
-                model_uri = f"runs:/{run_id}/model"
+                from src.tracking.mlflow_setup import init_tracking
+                import tempfile
+                import mlflow.artifacts
+                
+                init_tracking()
+
+                model_name = os.environ.get("MLFLOW_MODEL_NAME", "QA_Model")
+                model_alias = os.environ.get("MLFLOW_MODEL_ALIAS", "latest")
+                model_uri = f"models:/{model_name}/{model_alias}"
+                
+                run_id = os.environ.get("MLFLOW_RUN_ID")
+                if run_id:
+                    model_uri = f"runs:/{run_id}/qa-model"
+
+                print(f"⏳ Attempting to load model from MLflow: {model_uri}")
                 self.model = mlflow.pytorch.load_model(model_uri)
                 self.model.to(self.device)
                 self.model.eval()
 
-                vocab_path = CHECKPOINT_DIR / "vocab.json"
-                if vocab_path.exists():
-                    with open(vocab_path) as f:
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    vocab_path_downloaded = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/vocab.json", dst_path=tmpdir)
+                    with open(vocab_path_downloaded) as f:
                         self.vocab = json.load(f)
-                    self.vocab_size = len(self.vocab)
-                    self.is_dummy = False
-                    return
-            except Exception:
-                pass
+
+                self.vocab_size = len(self.vocab)
+                self.is_dummy = False
+                print(f"✅ Successfully loaded model and vocab from MLflow!")
+                return
+            except Exception as e:
+                print(f"⚠️ Failed to load model from MLflow: {e}")
 
         config_path = CHECKPOINT_DIR / "config.json"
         weights_path = CHECKPOINT_DIR / "best_model.pt"
