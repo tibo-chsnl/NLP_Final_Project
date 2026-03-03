@@ -6,10 +6,10 @@ This repository contains the integrated final project for the Master 2 (M2) cour
 
 The objective is to develop a Closed-Domain Question Answering (QA) neural network and deploy it as a production-grade Web Application. This project demonstrates the full MLOps lifecycle: data versioning, model training & evaluation, model registry & promotion, CI/CD with guard gates, and reproducible cloud deployments.
 
-## 👤 Contributors
+## Contributors
 Project realized by a team of 3 students: **Alon DEBASC**, **Axel STOLTZ**, and **Thibault CHESNEL** under the supervision of instructor **Khodor Hammoud**.
 
-## 📋 Project Description
+## Project Description
 
 The system processes "factoid" questions (e.g., "Where is the Louvre Museum located?") based on an input paragraph. The final product is a **"Document QA Assistant" Web Application**, allowing users to interact directly with the model and provide feedback to further augment the training dataset.
 
@@ -22,7 +22,7 @@ The system processes "factoid" questions (e.g., "Where is the Louvre Museum loca
 
 ---
 
-## 📊 Dataset & Versioning
+## Dataset & Versioning
 
 ### Data Origin: SQuAD 2.0 + User Augmentation
 The foundational data for this project comes from the **Stanford Question Answering Dataset (SQuAD) 2.0**.
@@ -40,7 +40,7 @@ The foundational data for this project comes from the **Stanford Question Answer
 
 ---
 
-## 🏗️ Architecture Diagram
+## Architecture Diagram
 
 ```mermaid
 flowchart TB
@@ -87,7 +87,7 @@ flowchart TB
     CDStaging --> CDProd
 ```
 
-## 🔄 CI/CD Pipeline
+## CI/CD Pipeline
 
 | Trigger | Workflow | Steps |
 |---|---|---|
@@ -99,7 +99,7 @@ flowchart TB
 
 ---
 
-## 🗺️ Full MLOps Workflow — Branch Creation to Production
+## Full MLOps Workflow — Branch Creation to Production
 
 The diagram below traces the **complete path a code change takes from branch creation to production**, including every GitHub Actions workflow, CI/CD gate, model promotion step, deployment trigger, and the automated retraining feedback loop.
 
@@ -124,8 +124,8 @@ flowchart TB
         A1[/"Developer creates branch"/]:::branchStyle
         A2{"branch-name-check.yml<br/><b>on: create</b>"}:::actionStyle
         A3["Validate name matches<br/><code>main|dev|staging|feature/*</code>"]:::checkStyle
-        A4["❌ Block non-conforming branch"]:::gateStyle
-        A5["✅ Branch name valid"]:::checkStyle
+        A4["Block non-conforming branch"]:::gateStyle
+        A5["Branch name valid"]:::checkStyle
     end
     A1 --> A2
     A2 --> A3
@@ -192,8 +192,8 @@ flowchart TB
         E0[/"PR: staging → main"/]:::branchStyle
         E1{{"promotion-gate.yml<br/><b>on: pull_request [main]</b>"}}:::actionStyle
         E2["<b>Quality Gate</b><br/>promotion_gate.py<br/>Check F1 ≥ 0.5 in MLflow<br/>Strategy 1: Staging model<br/>Strategy 2: Latest version"]:::gateStyle
-        E3["❌ F1 below threshold<br/>PR blocked"]:::gateStyle
-        E4["✅ F1 passes threshold"]:::checkStyle
+        E3["F1 below threshold<br/>PR blocked"]:::gateStyle
+        E4["F1 passes threshold"]:::checkStyle
     end
     D5 -->|"Staging validated"| E0
     E0 --> E1
@@ -315,7 +315,7 @@ Runs on a **weekly schedule** (Sunday 02:00 UTC) or via **manual dispatch** with
 
 ---
 
-## 🏆 Model Promotion
+## Model Promotion
 
 1. **Training** — model is trained/fine-tuned and registered in the MLflow Model Registry.
 2. **Staging** — on push to `staging`, the latest model version is transitioned to `Staging` stage and deployed to the staging environment.
@@ -325,7 +325,7 @@ Runs on a **weekly schedule** (Sunday 02:00 UTC) or via **manual dispatch** with
 
 ---
 
-## 🌿 Git Branching Model
+## Git Branching Model
 
 The project follows a strict branching strategy:
 
@@ -340,7 +340,7 @@ Workflow: `feature/*` → PR to `dev` → merge to `staging` → merge to `main`
 
 ---
 
-## 🧪 Testing
+## Testing
 
 All tests run automatically in CI (`ci.yml` on every PR to `dev`/`staging`/`main`).
 
@@ -358,7 +358,7 @@ cd frontend && npx playwright test          # E2E
 
 ---
 
-## 📦 Model Versioning & Registry (MLflow + DagsHub)
+## Model Versioning & Registry (MLflow + DagsHub)
 
 * **MLflow Experiments**: all training runs are logged with metrics (`train_loss`, `val_loss`, `val_f1`, `val_em`, `best_val_f1`), parameters (`epochs`, `batch_size`, `learning_rate`, `sample_ratio`), and traceability info (`git_commit`, `dvc_data_version`).
 * **MLflow Model Registry**: models are registered as `QA_Model`. The registry is the **single source of truth** for deployments.
@@ -366,7 +366,7 @@ cd frontend && npx playwright test          # E2E
 
 ---
 
-## 🔐 12-Factor App
+## 12-Factor App
 
 All environment-specific configuration is injected via environment variables, never hardcoded:
 
@@ -377,7 +377,7 @@ All environment-specific configuration is injected via environment variables, ne
 
 ---
 
-## ☁️ Cloud Deployment
+## Cloud Deployment
 
 | Environment | Frontend | Backend | Branch | Model Alias |
 |---|---|---|---|---|
@@ -391,7 +391,7 @@ All environment-specific configuration is injected via environment variables, ne
 
 ---
 
-## 🏃‍♂️ Reproducibility Instructions
+## Reproducibility Instructions
 
 ### Prerequisites
 * **Python 3.12+**
