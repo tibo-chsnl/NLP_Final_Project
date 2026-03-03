@@ -135,7 +135,8 @@ class InferencePipeline:
         start_idx = torch.argmax(start_logits).item()
 
         mask = torch.ones_like(end_logits) * -1e9
-        mask[start_idx:] = 0
+        max_span = min(30, max_len - start_idx)
+        mask[start_idx : start_idx + max_span] = 0
         valid_end_logits = end_logits + mask
         end_idx = torch.argmax(valid_end_logits).item()
 

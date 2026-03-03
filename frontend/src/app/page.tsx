@@ -13,6 +13,7 @@ export default function Home() {
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [showCorrection, setShowCorrection] = useState(false);
   const [correction, setCorrection] = useState("");
 
@@ -21,6 +22,7 @@ export default function Home() {
     setLoading(true);
     setAnswer(null);
     setFeedbackSent(false);
+    setFeedbackError(null);
     setShowCorrection(false);
     setCorrection("");
     try {
@@ -39,19 +41,34 @@ export default function Home() {
   }
 
   async function sendFeedback(positive: boolean) {
-    await fetch("/api/feedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        context,
-        question,
-        answer: positive ? answer?.text : correction,
-        original_answer: answer?.text,
-        positive,
-      }),
-    });
-    setFeedbackSent(true);
-    setShowCorrection(false);
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          context,
+          question,
+          answer: positive ? answer?.text : correction,
+          original_answer: answer?.text,
+          positive,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 503) {
+          setFeedbackError("Feedback service unavailable");
+        } else {
+          setFeedbackError(data.error || "Failed to send feedback");
+        }
+        return;
+      }
+
+      setFeedbackSent(true);
+      setShowCorrection(false);
+    } catch {
+      setFeedbackError("Network error — could not send feedback");
+    }
   }
 
   function renderHighlighted() {
@@ -199,6 +216,10 @@ export default function Home() {
                 </div>
               ) : (
                 <p className="mt-4 text-xs text-indigo-400">Thanks for your feedback!</p>
+              )}
+
+              {feedbackError && (
+                <p className="mt-4 text-xs text-red-400">{feedbackError}</p>
               )}
 
               {showCorrection && !feedbackSent && (

@@ -82,3 +82,20 @@ services:
       - key: BACKEND_URL
         sync: false
     autoDeploy: true
+
+  # ===========================
+  # SLIDES PRESENTATION
+  # ===========================
+  - type: web
+    name: qa-frontend-slides
+    runtime: node
+    region: frankfurt
+    plan: free
+    branch: main
+    rootDir: slides
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+    autoDeploy: true
