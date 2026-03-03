@@ -17,6 +17,7 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "torch>=2.2.0,<=2.2.2",
     "tqdm>=4.66.0",
+    "dvc-s3>=3.3.0",
 ]
 
 [dependency-groups]

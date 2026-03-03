@@ -47,11 +47,15 @@ class InferencePipeline:
                 self.model.eval()
 
                 with tempfile.TemporaryDirectory() as tmpdir:
-                    vocab_path_downloaded = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/vocab.json", dst_path=tmpdir)
-                    with open(vocab_path_downloaded) as f:
-                        self.vocab = json.load(f)
-
-                self.vocab_size = len(self.vocab)
+                    try:
+                        vocab_path_downloaded = mlflow.artifacts.download_artifacts(artifact_uri=f"{model_uri}/vocab.json", dst_path=tmpdir)
+                        with open(vocab_path_downloaded) as f:
+                            self.vocab = json.load(f)
+                        self.vocab_size = len(self.vocab)
+                    except Exception as e:
+                        print(f"⚠️ Failed to download vocab.json from MLflow, using fallback vocab: {e}")
+                        self.vocab = {"<PAD>": 0, "<UNK>": 1}
+                        self.vocab_size = 50000
                 self.is_dummy = False
                 print(f"✅ Successfully loaded model and vocab from MLflow!")
                 return
