@@ -2,15 +2,19 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from api.config import ENVIRONMENT, setup_logging
 from api.routers import data, health, qa
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Configure logging based on environment
+    setup_logging()
+
     # Load model on startup
     from api.inference import get_inference_pipeline
 
-    print("Initializing inference pipeline...")
+    print(f"Initializing inference pipeline ({ENVIRONMENT})...")
     get_inference_pipeline()
     yield
     # Cleanup on shutdown (if needed)
@@ -31,4 +35,4 @@ app.include_router(data.router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the Document QA Assistant API"}
+    return {"message": "Welcome to the Document QA Assistant API", "environment": ENVIRONMENT}
