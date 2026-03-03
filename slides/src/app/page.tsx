@@ -409,11 +409,14 @@ function buildSlides(): Slide[] {
                                     ["Loss", "CrossEntropy (start+end)/2"],
                                     ["Optimizer", "Adam (lr=0.001)"],
                                     ["Grad Clipping", "max_norm = 5.0"],
-                                    ["Batch Size", "32"],
-                                    ["Epochs", "5"],
+                                    ["Batch Size", "16"],
+                                    ["Epochs", "4"],
                                     ["Embedding Dim", "100"],
                                     ["Hidden Dim", "128"],
                                     ["Dropout", "0.2"],
+                                    ["Vocab Size", "50,002"],
+                                    ["Train Samples", "86,793"],
+                                    ["Val Samples", "5,915"],
                                 ]}
                             />
                         </div>
@@ -437,7 +440,7 @@ function buildSlides(): Slide[] {
                     </div>
                 </div>
             ),
-            notes: "For training, our loss function is the average of two cross-entropy losses — one for the start position and one for the end position. We use Adam optimizer at a learning rate of 0.001, with gradient clipping at 5.0 to prevent exploding gradients in the LSTMs. After each epoch, we evaluate on the SQuAD dev set using Exact Match and F1. If the F1 score improves, we save the model checkpoint. We trained on Google Colab with GPU acceleration.",
+            notes: "For training, our loss function is the average of two cross-entropy losses — one for the start position and one for the end position. We use Adam optimizer at a learning rate of 0.001, with gradient clipping at 5.0 to prevent exploding gradients in the LSTMs. We trained on 86,793 samples with a batch size of 16 for 4 epochs. After each epoch, we evaluate on the 5,915-sample dev set using Exact Match and F1. If the F1 score improves, we save the model checkpoint. Our best checkpoint came from epoch 4. We trained on Google Colab with GPU acceleration.",
         },
 
         /* ── 11. Evaluation ── */
@@ -469,7 +472,7 @@ function buildSlides(): Slide[] {
                         headers={["Model", "EM", "F1", "Year"]}
                         rows={[
                             ["BiDAF (Seo et al.)", "59.2", "62.1", "2017"],
-                            ["Our BiDAF", "TBD", "TBD", "2026"],
+                            ["Our BiDAF ✅", "43.4", "60.6", "2026"],
                             ["BERT-base", "73.7", "76.3", "2018"],
                             ["BERT-large", "78.7", "81.9", "2018"],
                             ["Human Performance", "86.8", "89.5", "—"],
@@ -478,7 +481,7 @@ function buildSlides(): Slide[] {
                     />
                 </div>
             ),
-            notes: "We use the two standard SQuAD metrics. Exact Match is strict — the prediction must match the gold answer word-for-word after normalization. F1 is more forgiving — it measures the overlap between predicted and gold tokens. Our normalization follows the official SQuAD eval script: lowercase, remove punctuation, remove articles, and fix whitespace. The table shows published baselines. Our BiDAF implementation is expected to perform in the range of the original paper. BERT-based models perform significantly better because they use pre-trained contextualized embeddings, whereas our embeddings are learned from scratch.",
+            notes: "We use the two standard SQuAD metrics. Exact Match is strict — the prediction must match the gold answer word-for-word after normalization. F1 is more forgiving — it measures the overlap between predicted and gold tokens. Our normalization follows the official SQuAD eval script. Our BiDAF achieves 43.4% Exact Match and 60.6% F1. The F1 is very close to the original BiDAF paper's 62.1, which is a strong result. Our EM is lower at 43.4 versus 59.2, meaning our model sometimes captures part of the answer but not the exact span. BERT-based models perform significantly better because they use pre-trained contextualized embeddings, whereas our embeddings are learned from scratch on SQuAD alone.",
         },
 
         /* ── 12. Demo ── */
