@@ -38,7 +38,11 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from model.qa_model import QAModel  # noqa: E402
 from src.data.loader import load_squad  # noqa: E402
 from src.training.dataset import create_dataloader  # noqa: E402
-from src.training.trainer import evaluate  # noqa: E402
+from src.training.trainer import (  # noqa: E402
+    _get_dvc_data_version,
+    _get_git_commit,
+    evaluate,  # noqa: E402
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CHECKPOINT_DIR = PROJECT_ROOT / "checkpoints"
@@ -275,6 +279,8 @@ def main():
                 "baseline_f1": round(baseline_f1, 4),
                 "baseline_em": round(baseline_em, 4),
                 "device": str(device),
+                "git_commit": _get_git_commit(),
+                "dvc_data_version": _get_dvc_data_version(args.train_path),
             }
         )
 

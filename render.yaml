@@ -19,9 +19,25 @@ services:
         value: staging
       - key: PYTHON_VERSION
         value: "3.12.0"
+      - key: USE_MLFLOW
+        value: "true"
+      - key: MLFLOW_MODEL_NAME
+        value: QA_Model
+      - key: MLFLOW_MODEL_ALIAS
+        value: staging
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: MLFLOW_TRACKING_URI
+        sync: false
+      - key: MLFLOW_TRACKING_USERNAME
+        sync: false
+      - key: MLFLOW_TRACKING_PASSWORD
+        sync: false
+      - key: DAGSHUB_USER_NAME
+        sync: false
+      - key: DAGSHUB_REPO_NAME
         sync: false
     autoDeploy: true
 
@@ -63,9 +79,25 @@ services:
         value: production
       - key: PYTHON_VERSION
         value: "3.12.0"
+      - key: USE_MLFLOW
+        value: "true"
+      - key: MLFLOW_MODEL_NAME
+        value: QA_Model
+      - key: MLFLOW_MODEL_ALIAS
+        value: production
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: MLFLOW_TRACKING_URI
+        sync: false
+      - key: MLFLOW_TRACKING_USERNAME
+        sync: false
+      - key: MLFLOW_TRACKING_PASSWORD
+        sync: false
+      - key: DAGSHUB_USER_NAME
+        sync: false
+      - key: DAGSHUB_REPO_NAME
         sync: false
     autoDeploy: true
 

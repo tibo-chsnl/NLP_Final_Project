@@ -1,5 +1,9 @@
 name: Model Promotion Gate
 
+# ─────────────────────────────────────────────────────────────
+# Runs on PRs to main (staging → main) and on manual dispatch.
+# Also used by deploy-prod.yml as a required gate.
+# ─────────────────────────────────────────────────────────────
 on:
   workflow_dispatch:
   pull_request:
@@ -8,7 +12,14 @@ on:
 
 jobs:
   promotion-gate:
+    name: Quality Gate (F1 ≥ threshold)
     runs-on: ubuntu-latest
+    env:
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+      MODEL_NAME: ${{ secrets.MODEL_NAME }}
+      F1_THRESHOLD: "0.5"
     steps:
       - uses: actions/checkout@v4
 
@@ -16,14 +27,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install MLflow
         run: pip install mlflow
 
       - name: Run promotion gate
-        env:
-          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
-          MODEL_NAME: ${{ secrets.MODEL_NAME }}
-          F1_THRESHOLD: "0.5"
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
         run: python scripts/promotion_gate.py
