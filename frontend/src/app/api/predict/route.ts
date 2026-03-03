@@ -1,67 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const { context, question } = await req.json();
+  try {
+    const { context, question } = await req.json();
 
-  const backendUrl = process.env.BACKEND_URL;
-  if (backendUrl) {
-    try {
-      const res = await fetch(`${backendUrl}/api/v1/qa/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ context, question }),
-      });
-      const data = await res.json();
-      const answerText = data.answer || "";
-      if (!data.is_dummy && answerText.length < context.length * 0.5) {
-        const start = context.indexOf(answerText);
+    const backendUrl = process.env.BACKEND_URL || "http://127.0.0.1:8000";
+
+    const res = await fetch(`${backendUrl}/api/v1/qa/ask`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ context, question }),
+    });
+
+    if (!res.ok) {
+        const errText = await res.text();
+        console.error("Backend error:", res.status, errText);
         return NextResponse.json({
-          text: answerText,
-          start: start >= 0 ? start : 0,
-          end: start >= 0 ? start + answerText.length : 0,
-          confidence: data.confidence || 0,
+            text: `(Erreur du backend: ${res.status}) - ${errText}`,
+            start: 0,
+            end: 0,
+            confidence: 0,
         });
-      }
-    } catch {}
-  }
-
-  const stopWords = new Set([
-    "is", "the", "a", "an", "of", "in", "to", "and", "was", "were", "are",
-    "what", "where", "when", "who", "how", "which", "why", "do", "does", "did",
-    "can", "could", "would", "should", "has", "have", "had", "be", "been",
-    "this", "that", "it", "for", "on", "with", "as", "at", "by", "from",
-  ]);
-
-  const questionWords = question
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((w: string) => !stopWords.has(w) && w.length > 2);
-
-  const sentences = context
-    .split(/(?<=[.!?])\s+/)
-    .filter((s: string) => s.trim().length > 0);
-
-  let best = sentences[0] || context;
-  let bestScore = -1;
-
-  for (const s of sentences) {
-    const lower = s.toLowerCase();
-    let score = 0;
-    for (const w of questionWords) {
-      if (lower.includes(w)) score++;
     }
-    if (score > bestScore) {
-      bestScore = score;
-      best = s.trim();
-    }
+
+    const data = await res.json();
+    const answerText = data.answer || "";
+    
+    // Case-insensitive search for answer index
+    const lowerContext = context.toLowerCase();
+    const lowerAnswer = answerText.toLowerCase();
+    const start = lowerContext.indexOf(lowerAnswer);
+    
+    return NextResponse.json({
+      text: answerText,
+      start: start >= 0 ? start : 0,
+      end: start >= 0 ? start + answerText.length : 0,
+      confidence: data.confidence || 0,
+    });
+  } catch (err: any) {
+    console.error("Fetch error:", err);
+    return NextResponse.json({
+        text: `(Erreur de connexion): ${err.message}`,
+        start: 0,
+        end: 0,
+        confidence: 0,
+    });
   }
-
-  const start = context.indexOf(best);
-
-  return NextResponse.json({
-    text: best,
-    start,
-    end: start + best.length,
-    confidence: 0.82 + Math.random() * 0.15,
-  });
 }

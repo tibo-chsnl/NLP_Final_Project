@@ -1,3 +1,6 @@
 [core]
-    remote = shared
+    remote = origin
     autostage = true
+['remote "origin"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/akksel1/final_project.s3
