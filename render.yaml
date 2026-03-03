@@ -7,7 +7,7 @@ services:
   # STAGING ENVIRONMENT
   # ===========================
   - type: web
-    name: qa-backend-staging-ylge
+    name: qa-backend-staging
     runtime: python
     region: frankfurt
     plan: free
@@ -26,7 +26,7 @@ services:
     autoDeploy: true
 
   - type: web
-    name: qa-frontend-staging-ylge
+    name: qa-frontend-staging
     runtime: node
     region: frankfurt
     plan: free
@@ -51,7 +51,7 @@ services:
   # PRODUCTION ENVIRONMENT
   # ===========================
   - type: web
-    name: qa-backend-prod-ylge
+    name: qa-backend-prod
     runtime: python
     region: frankfurt
     plan: free
@@ -70,7 +70,7 @@ services:
     autoDeploy: true
 
   - type: web
-    name: qa-frontend-prod-ylge
+    name: qa-frontend-prod
     runtime: node
     region: frankfurt
     plan: free
@@ -95,7 +95,7 @@ services:
   # SLIDES PRESENTATION
   # ===========================
   - type: web
-    name: qa-frontend-slides-ylge
+    name: qa-frontend-slides
     runtime: node
     region: frankfurt
     plan: free
