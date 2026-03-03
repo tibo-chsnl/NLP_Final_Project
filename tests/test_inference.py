@@ -13,12 +13,14 @@ def mock_pipeline():
         pipeline = InferencePipeline()
     return pipeline
 
+
 def test_inference_pipeline_initialization(mock_pipeline):
     assert mock_pipeline is not None
     assert mock_pipeline.model is not None
     assert mock_pipeline.is_dummy is True
     # Model should have valid vocab and device
     assert mock_pipeline.vocab_size > 0
+
 
 def test_preprocessing(mock_pipeline):
     context = "The quick brown fox jumps over the lazy dog."
@@ -32,6 +34,7 @@ def test_preprocessing(mock_pipeline):
     assert q_mask.shape == q_tensor.shape
     assert len(tokens) > 0
     assert isinstance(tokens, list)
+
 
 def test_predict_returns_dummy_response(mock_pipeline):
     context = "The Louvre Museum is located in Paris, France."
