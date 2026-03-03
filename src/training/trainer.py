@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 
 import torch
 import torch.nn as nn
@@ -9,6 +10,31 @@ from model.qa_model import QAModel
 from src.data.loader import load_squad
 from src.evaluation.metrics import compute_exact_match, compute_f1
 from src.training.dataset import build_vocab_from_dataset, create_dataloader
+
+
+def _get_git_commit() -> str:
+    """Return the current HEAD commit hash, or 'unknown' if unavailable."""
+    try:
+        return (
+            subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL)
+            .decode()
+            .strip()
+        )
+    except Exception:
+        return "unknown"
+
+
+def _get_dvc_data_version(train_path: str) -> str:
+    """Return the MD5 hash from the .dvc pointer file for traceability."""
+    dvc_file = train_path + ".dvc" if not train_path.endswith(".dvc") else train_path
+    try:
+        with open(dvc_file) as f:
+            for line in f:
+                if "md5:" in line:
+                    return line.split("md5:")[1].strip()
+    except Exception:
+        pass
+    return "unknown"
 
 
 def evaluate(model, dataloader, device, vocab=None):
@@ -163,6 +189,8 @@ def train(
                 "train_samples": len(train_loader.dataset),
                 "val_samples": len(val_loader.dataset),
                 "device": str(device),
+                "git_commit": _get_git_commit(),
+                "dvc_data_version": _get_dvc_data_version(train_path),
             }
         )
 
