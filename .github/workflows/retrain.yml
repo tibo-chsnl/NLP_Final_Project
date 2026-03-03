@@ -157,6 +157,8 @@ jobs:
   commit-and-promote:
     name: Commit & Trigger Promotion
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs: [pull-feedback, fine-tune]
     if: ${{ always() && needs.fine-tune.result == 'success' }}
     env:
