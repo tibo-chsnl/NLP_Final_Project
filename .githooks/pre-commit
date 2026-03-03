@@ -1,0 +1,18 @@
+#!/bin/sh
+# Pre-commit hook: auto-format Python files with ruff before committing
+
+# Get list of staged .py files
+STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM | grep '\.py$')
+
+if [ -n "$STAGED_PY" ]; then
+    echo "🔧 Running ruff format on staged Python files..."
+    uv run ruff format $STAGED_PY
+
+    echo "🔍 Running ruff check on staged Python files..."
+    uv run ruff check --fix $STAGED_PY
+
+    # Re-add the formatted files to staging
+    echo $STAGED_PY | xargs git add
+
+    echo "✅ Ruff format + lint applied"
+fi
