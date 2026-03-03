@@ -1,0 +1,22 @@
+name: Branch Name Check
+
+on:
+  create:
+
+jobs:
+  check-branch-name:
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        run: |
+          BRANCH="${{ github.event.ref }}"
+          ALLOWED="^(main|dev|staging|feature/.+)$"
+
+          if [[ ! "$BRANCH" =~ $ALLOWED ]]; then
+            echo "::error::Branch '$BRANCH' violates naming convention."
+            echo "Allowed patterns: main, dev, staging, feature/*"
+            exit 1
+          fi
+
+          echo "✅ Branch '$BRANCH' follows naming convention."
