@@ -90,6 +90,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.DAGSHUB_TOKEN }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.DAGSHUB_TOKEN }}
+      DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
       DAGSHUB_USER_NAME: ${{ secrets.DAGSHUB_USER_NAME }}
       DAGSHUB_REPO_NAME: ${{ secrets.DAGSHUB_REPO_NAME }}
       MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
