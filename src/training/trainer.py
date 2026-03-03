@@ -172,7 +172,7 @@ def train(
             running_loss = 0.0
             num_batches = 0
 
-            pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}", leave=True)
+            pbar = tqdm(train_loader, desc=f"Epoch {epoch + 1}/{epochs}", leave=True)
             for batch in pbar:
                 context_ids = batch["context_ids"].to(device)
                 question_ids = batch["question_ids"].to(device)
@@ -255,7 +255,9 @@ def train(
 
                 # --- MLflow: log model + artifacts on best F1 ---
                 if mlflow:
-                    mlflow.pytorch.log_model(model, artifact_path="qa-model", registered_model_name="QA_Model")
+                    mlflow.pytorch.log_model(
+                        model, artifact_path="qa-model", registered_model_name="QA_Model"
+                    )
                     mlflow.log_artifact(vocab_path, artifact_path="qa-model")
                     mlflow.log_artifact(config_path, artifact_path="qa-model")
                     print(f"  📦 Model uploaded and registered to MLflow (val_f1={val_f1:.4f})")

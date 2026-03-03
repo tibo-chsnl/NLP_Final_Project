@@ -27,44 +27,69 @@ def parse_args():
     )
 
     # Data paths
-    parser.add_argument("--train-path", type=str, default="data/train-v2.0.json",
-                        help="Path to SQuAD training JSON file.")
-    parser.add_argument("--dev-path", type=str, default="data/dev-v2.0.json",
-                        help="Path to SQuAD dev/validation JSON file.")
+    parser.add_argument(
+        "--train-path",
+        type=str,
+        default="data/train-v2.0.json",
+        help="Path to SQuAD training JSON file.",
+    )
+    parser.add_argument(
+        "--dev-path",
+        type=str,
+        default="data/dev-v2.0.json",
+        help="Path to SQuAD dev/validation JSON file.",
+    )
 
     # Hyperparameters
-    parser.add_argument("--epochs", type=int, default=5,
-                        help="Number of training epochs.")
-    parser.add_argument("--batch-size", type=int, default=32,
-                        help="Batch size for training and validation.")
-    parser.add_argument("--lr", type=float, default=0.001,
-                        help="Learning rate for Adam optimizer.")
-    parser.add_argument("--hidden-dim", type=int, default=128,
-                        help="Hidden dimension for LSTM layers.")
-    parser.add_argument("--embedding-dim", type=int, default=100,
-                        help="Dimension of word embeddings.")
-    parser.add_argument("--dropout", type=float, default=0.2,
-                        help="Dropout probability.")
-    parser.add_argument("--max-context-len", type=int, default=400,
-                        help="Maximum context sequence length (tokens).")
-    parser.add_argument("--max-question-len", type=int, default=60,
-                        help="Maximum question sequence length (tokens).")
-    parser.add_argument("--min-freq", type=int, default=2,
-                        help="Minimum token frequency to include in vocabulary.")
-    parser.add_argument("--max-vocab-size", type=int, default=50000,
-                        help="Maximum vocabulary size.")
+    parser.add_argument("--epochs", type=int, default=5, help="Number of training epochs.")
+    parser.add_argument(
+        "--batch-size", type=int, default=32, help="Batch size for training and validation."
+    )
+    parser.add_argument("--lr", type=float, default=0.001, help="Learning rate for Adam optimizer.")
+    parser.add_argument(
+        "--hidden-dim", type=int, default=128, help="Hidden dimension for LSTM layers."
+    )
+    parser.add_argument(
+        "--embedding-dim", type=int, default=100, help="Dimension of word embeddings."
+    )
+    parser.add_argument("--dropout", type=float, default=0.2, help="Dropout probability.")
+    parser.add_argument(
+        "--max-context-len", type=int, default=400, help="Maximum context sequence length (tokens)."
+    )
+    parser.add_argument(
+        "--max-question-len",
+        type=int,
+        default=60,
+        help="Maximum question sequence length (tokens).",
+    )
+    parser.add_argument(
+        "--min-freq", type=int, default=2, help="Minimum token frequency to include in vocabulary."
+    )
+    parser.add_argument(
+        "--max-vocab-size", type=int, default=50000, help="Maximum vocabulary size."
+    )
 
     # Output
-    parser.add_argument("--save-dir", type=str, default="checkpoints",
-                        help="Directory to save model checkpoints.")
-    parser.add_argument("--device", type=str, default=None,
-                        help="Device to train on (e.g. 'cpu', 'cuda'). Auto-detected if omitted.")
+    parser.add_argument(
+        "--save-dir", type=str, default="checkpoints", help="Directory to save model checkpoints."
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default=None,
+        help="Device to train on (e.g. 'cpu', 'cuda'). Auto-detected if omitted.",
+    )
 
     # MLflow / DagsHub
-    parser.add_argument("--experiment-name", type=str, default="QA_Model_Training",
-                        help="MLflow experiment name on DagsHub.")
-    parser.add_argument("--no-mlflow", action="store_true",
-                        help="Disable MLflow tracking (local-only training).")
+    parser.add_argument(
+        "--experiment-name",
+        type=str,
+        default="QA_Model_Training",
+        help="MLflow experiment name on DagsHub.",
+    )
+    parser.add_argument(
+        "--no-mlflow", action="store_true", help="Disable MLflow tracking (local-only training)."
+    )
 
     return parser.parse_args()
 
