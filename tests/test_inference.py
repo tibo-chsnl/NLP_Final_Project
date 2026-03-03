@@ -1,4 +1,3 @@
-import os
 from unittest.mock import patch
 
 import pytest
@@ -8,9 +7,22 @@ from api.inference import InferencePipeline
 
 @pytest.fixture
 def mock_pipeline():
-    # Force dummy model initialization to avoid MLflow calls during tests
-    with patch.dict(os.environ, {"MLFLOW_RUN_ID": ""}, clear=True):
+    with patch("api.inference.InferencePipeline._load_model", return_value=None):
         pipeline = InferencePipeline()
+        # Initialize a basic dummy model so the pipeline works
+        from model.qa_model import QAModel
+
+        pipeline.vocab = {"<PAD>": 0, "<UNK>": 1}
+        pipeline.vocab_size = 10000
+        pipeline.model = QAModel(
+            vocab_size=pipeline.vocab_size,
+            embedding_dim=64,
+            hidden_dim=64,
+            dropout=0.0,
+        )
+        pipeline.model.to(pipeline.device)
+        pipeline.model.eval()
+        pipeline.is_dummy = True
     return pipeline
 
 
@@ -36,7 +48,7 @@ def test_preprocessing(mock_pipeline):
     assert isinstance(tokens, list)
 
 
-def test_predict_returns_dummy_response(mock_pipeline):
+def test_predict_returns_valid_response(mock_pipeline):
     context = "The Louvre Museum is located in Paris, France."
     question = "Where is the Louvre Museum located?"
 
@@ -48,6 +60,4 @@ def test_predict_returns_dummy_response(mock_pipeline):
     assert result["is_dummy_model"] is True
     assert isinstance(result["confidence"], float)
     assert isinstance(result["answer"], str)
-    # The dummy model weights are random, so we can't assert the exact string,
-    # but we can assert the structure is valid string.
     assert len(result["answer"]) >= 0
