@@ -12,13 +12,17 @@ services:
     region: frankfurt
     plan: free
     branch: staging
-    buildCommand: pip install uv && uv sync
+    buildCommand: pip install uv && uv sync --dev && uv run dvc pull checkpoints/
     startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
         value: staging
       - key: PYTHON_VERSION
         value: "3.12.0"
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
     autoDeploy: true
 
   - type: web
@@ -52,13 +56,17 @@ services:
     region: frankfurt
     plan: free
     branch: main
-    buildCommand: pip install uv && uv sync
+    buildCommand: pip install uv && uv sync --dev && uv run dvc pull checkpoints/
     startCommand: uv run uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ENVIRONMENT
         value: production
       - key: PYTHON_VERSION
         value: "3.12.0"
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
     autoDeploy: true
 
   - type: web
